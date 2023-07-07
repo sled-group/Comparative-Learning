@@ -45,7 +45,12 @@ Human language acquisition is an efficient, supervised, and continual process. I
 
 Comparative Learning is the process of finding the similarities and differences from a set of inputs. It is a general learning strategy that can be applied to different input modalities, sizes, and duration. It can be broken down to the following two parts:
 - **Similarity Learning:** The process of SIM finds similarities across input batches, and extracts out its shared representation 
-- **Difference Learning:** The process of DIF highlights the differences between an object label * *l* * and other non-compatible labels, and refines the representation for word * *l* *
+- **Difference Learning:** The process of DIF highlights the differences between an object label l and other non-compatible labels, and refines the representation for word l
+
+Highlights:
+- **Acquisition Process:** We define the word acquisition as two parts of learning: **Information Filteration** and **Representation-Word Mapping**. It is to learn a computation as well as a representation. All learned feature-word mapping will be stored in memory.
+- **Continual Learning:** In this work, we compute the centroid of a SIM batch to extract their shared feature, and refine the scope of this feature with the DIF batch. With the help of memory storage, 1) New words can be continually added to the memory; 2) the already learned word-feature can be pulled out of the memory, updated and refined when more examples are availble. 
 
 <!-- In this work, we compute the centroid of a batch of inputs for with their shared label representation, as well as  -->
+![alt text](https://github.com/sled-group/Comparative-Learning/blob/main/assets/pipeline.png)
 
