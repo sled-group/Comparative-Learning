@@ -2,10 +2,10 @@
 
 ## TLDR
 
-- Authors: Yuwei Bao, Barrett Lattimer, Joyce Chai
-- Organization: University of Michigan, Computer Science and Engineering
-- Published in: ACL 2023, Toronto, Canada
-- Links: [Arxiv](https://arxiv.org/abs/2307.02615), [Github](https://github.com/sled-group/Comparative-Learning/tree/main), [Dataset](https://www.dropbox.com/sh/irnw2jdw3vs9od9/AACB1SqQWeWE7hjJTfhTRhA5a?dl=0)
+- **Authors:** Yuwei Bao, Barrett Lattimer, Joyce Chai
+- **Organization:** University of Michigan, Computer Science and Engineering
+- **Published in:** ACL 2023, Toronto, Canada
+- **Links:** [Arxiv](https://arxiv.org/abs/2307.02615), [Github](https://github.com/sled-group/Comparative-Learning/tree/main), [Dataset](https://www.dropbox.com/sh/irnw2jdw3vs9od9/AACB1SqQWeWE7hjJTfhTRhA5a?dl=0)
 - :star2: Nominated for Best Paper Award
 
 
