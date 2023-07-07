@@ -53,3 +53,20 @@ Highlights:
 
 ![alt text](https://github.com/sled-group/Comparative-Learning/blob/main/assets/pipeline.png)
 
+
+### Learning
+To train the models from scratch:
+```
+optional arguments:
+  -h, --help            show this help message and exit
+  --in_path IN_PATH, -i IN_PATH
+                        Data input path
+  --out_path OUT_PATH, -o OUT_PATH
+                        Model memory output path
+  --model_name MODEL_NAME, -n MODEL_NAME, default = 'best_mem.pickle'
+                        Best model memory to be saved file name
+  --pre_train PRE_TRAIN, -p PRE_TRAIN, optional,
+                        Pretrained model import name (saved in outpath)
+ ```
+
+
