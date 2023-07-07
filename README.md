@@ -10,12 +10,8 @@ Human language acquisition is an efficient, supervised, and continual process. I
 
 ![alt text](https://github.com/sled-group/Comparative-Learning/blob/main/assets/dataset_figure.png)
 
-<!-- ### Dataset Stats
-| <td colspan=2>Learning Attributes  | <td colspan=2>Changing Attributes | <td colspan=2>Variation Attributes |
-| ------------- | ------------- | ------------- |
-| Color | 8  | Lighting | 3  | Shade | 3 |
-| Material | 4  | Camera Angle | 6  | Size |3 |
-| Shape | 11 | | | Stretch | 4|  -->
+
+### Dataset Stats
 
 |Learning Attributes  |Changing Attributes |Variation Attributes |
 | ------------- | ------------- | ------------- |
@@ -26,3 +22,12 @@ Human language acquisition is an efficient, supervised, and continual process. I
 
 
 **Image Types (5):** RGBA, Depth, Surface Normal, Segmentation Map, Object Coordinates
+
+
+### Dataset Download
+
+Dropbox Link: [LINK](https://www.dropbox.com/sh/irnw2jdw3vs9od9/AACB1SqQWeWE7hjJTfhTRhA5a?dl=0)
+Hugging Face: [LINK](https://huggingface.co/datasets/sled-umich/SOLA)
+
+
+## [Method] **Comparative Learning**
