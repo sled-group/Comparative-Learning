@@ -23,4 +23,4 @@ Human language acquisition is an efficient, supervised, and continual process. I
 | Material: 4  | Camera Angle: 6  | Size: 3 |
 | Shape: 11 | |Stretch: 4|
 | Total:| 6336 (RBGA) | 989 (RGBA)|
-Image Types: RGBA, Depth, Surface Normal, Segmentation Map, Object Coordinates
+|Image Types: <td colspan=2> RGBA, Depth, Surface Normal, Segmentation Map, Object Coordinates|
