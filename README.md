@@ -8,3 +8,11 @@ Human language acquisition is an efficient, supervised, and continual process. I
 
 **SOLA (Simulated Objects for Language Acquisition)** is a small clean dataset with little noise and clearly defined attributes for efficient comparative learning and grounded language acquisition. It is generated using the open\-source simulation software [Kubric](https://github.com/google-research/kubric).
 
+![alt text](https://github.com/sled-group/Comparative-Learning/assets/dataset_figure.png)
+
+<!-- ### Dataset Stats
+| Learning Attributes  | Changing Attributes | Variation Attributes |
+| ------------- | ------------- | ------------- |
+| Color | 8  | Lighting | 3  | Shade | 3 |
+| Material | 4  | Camera Angle | 6  | Size |3 |
+| Shape | 11 | | | Stretch | 4|  -->
