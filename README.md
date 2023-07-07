@@ -10,9 +10,9 @@ Human language acquisition is an efficient, supervised, and continual process. I
 
 ![alt text](https://github.com/sled-group/Comparative-Learning/blob/main/assets/dataset_figure.png)
 
-<!-- ### Dataset Stats
+### Dataset Stats
 | Learning Attributes  | Changing Attributes | Variation Attributes |
 | ------------- | ------------- | ------------- |
 | Color | 8  | Lighting | 3  | Shade | 3 |
 | Material | 4  | Camera Angle | 6  | Size |3 |
-| Shape | 11 | | | Stretch | 4|  -->
+| Shape | 11 | | | Stretch | 4| 
