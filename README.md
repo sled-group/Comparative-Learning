@@ -57,6 +57,9 @@ Highlights:
 ### Learning
 To train the models from scratch:
 ```
+python main.py [-h] --in_path IN_PATH --out_path OUT_PATH
+               [--model_name MODEL_NAME] [--pre_train PRE_TRAIN]
+
 optional arguments:
   -h, --help            show this help message and exit
   --in_path IN_PATH, -i IN_PATH
