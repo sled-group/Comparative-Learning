@@ -49,8 +49,7 @@ Comparative Learning is the process of finding the similarities and differences 
 
 Highlights:
 - **Acquisition Process:** We define the word acquisition as two parts of learning: **Information Filteration** and **Representation-Word Mapping**. It is to learn a computation as well as a representation. All learned feature-word mapping will be stored in memory.
-- **Continual Learning:** In this work, we compute the centroid of a SIM batch to extract their shared feature, and refine the scope of this feature with the DIF batch. With the help of memory storage, 1) New words can be continually added to the memory; 2) the already learned word-feature can be pulled out of the memory, updated and refined when more examples are availble. 
+- **Continual Learning:** In this work, we compute the centroid of a SIM batch to extract their shared feature, and refine the scope of this feature with the DIF batch. With the help of memory storage, 1) New words can be continually added to the memory; 2) the existing word-feature can be pulled out of the memory, updated and refined when more examples are availble. 
 
-<!-- In this work, we compute the centroid of a batch of inputs for with their shared label representation, as well as  -->
 ![alt text](https://github.com/sled-group/Comparative-Learning/blob/main/assets/pipeline.png)
 
