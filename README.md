@@ -73,7 +73,7 @@ optional arguments:
  ```
 
 
-## What Can the acquired Models Do?
+## What Can the Acquired Models Do?
 
 ### Novel Composition Generation
 ![alt text](https://github.com/sled-group/Comparative-Learning/blob/main/assets/composition.png)
