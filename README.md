@@ -26,8 +26,8 @@ Human language acquisition is an efficient, supervised, and continual process. I
 
 ### Dataset Download
 
-Dropbox Link: [LINK](https://www.dropbox.com/sh/irnw2jdw3vs9od9/AACB1SqQWeWE7hjJTfhTRhA5a?dl=0)
-Hugging Face: [LINK](https://huggingface.co/datasets/sled-umich/SOLA)
+- Dropbox Link: [LINK](https://www.dropbox.com/sh/irnw2jdw3vs9od9/AACB1SqQWeWE7hjJTfhTRhA5a?dl=0)
+- Hugging Face: [LINK](https://huggingface.co/datasets/sled-umich/SOLA)
 
 
 ## [Method] **Comparative Learning**
