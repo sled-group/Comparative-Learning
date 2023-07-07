@@ -1,5 +1,16 @@
 # Human Inspired Progressive Alignment and Comparative Learning for Grounded Word Acquisition
 
+## TLDR
+
+- Authors: Yuwei Bao, Barrett Lattimer, Joyce Chai
+- Organization: University of Michigan, Computer Science and Engineering
+- Published in: ACL 2023, Toronto, Canada
+- Links: [Arxiv](https://arxiv.org/abs/2307.02615), [Github](https://github.com/sled-group/Comparative-Learning/tree/main), [Dataset](https://www.dropbox.com/sh/irnw2jdw3vs9od9/AACB1SqQWeWE7hjJTfhTRhA5a?dl=0)
+- :star2: Nominated for Best Paper Award
+
+
+
+
 ## Abstract
 Human language acquisition is an efficient, supervised, and continual process. In this work, we took inspiration from how human babies acquire their first language, and developed a computational process for word acquisition through comparative learning. Motivated by cognitive findings, we generated a small dataset that enables the computation models to compare the similarities and differences of various attributes, learn to filter out and extract the common information for each shared linguistic label. We frame the acquisition of words as not only the information filtration process, but also as representation-symbol mapping. This procedure does not involve a fixed vocabulary size, nor a discriminative objective, and allows the models to continually learn more concepts efficiently. Our results in controlled experiments have shown the potential of this approach for efficient continual learning of grounded words.
 
@@ -31,3 +42,10 @@ Human language acquisition is an efficient, supervised, and continual process. I
 
 
 ## [Method] **Comparative Learning**
+
+Comparative Learning is the process of finding the similarities and differences from a set of inputs. It is a general learning strategy that can be applied to different input modalities, sizes, and duration. It can be broken down to the following two parts:
+- **Similarity Learning:** The process of SIM finds similarities across input batches, and extracts out its shared representation 
+- **Difference Learning:** The process of DIF highlights the differences between an object label * *l* * and other non-compatible labels, and refines the representation for word * *l* *
+
+<!-- In this work, we compute the centroid of a batch of inputs for with their shared label representation, as well as  -->
+
