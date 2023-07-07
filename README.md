@@ -70,3 +70,25 @@ optional arguments:
  ```
 
 
+
+## Citation
+```
+@misc{bao2023human,
+      title={Human Inspired Progressive Alignment and Comparative Learning for Grounded Word Acquisition}, 
+      author={Yuwei Bao and Barrett Martin Lattimer and Joyce Chai},
+      year={2023},
+      eprint={2307.02615},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+```
+
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change. For further questions, please contact yuweibao@umich.edu.
+
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
+
+[![DOI](https://zenodo.org/badge/326563198.svg)](https://zenodo.org/badge/latestdoi/326563198)
+
