@@ -80,10 +80,11 @@ optional arguments:
 
 
 ### Composition Reasoning
-![alt text](https://github.com/sled-group/Comparative-Learning/blob/main/assets/r_c.png)
+<!-- ![alt text](https://github.com/sled-group/Comparative-Learning/blob/main/assets/r_c.png)
 ![alt text](https://github.com/sled-group/Comparative-Learning/blob/main/assets/r_m.png)
-![alt text](https://github.com/sled-group/Comparative-Learning/blob/main/assets/r_s.png)
+![alt text](https://github.com/sled-group/Comparative-Learning/blob/main/assets/r_s.png) -->
 
+![alt text](https://github.com/sled-group/Comparative-Learning/blob/main/assets/reason.png)
 
 
 ## Citation
