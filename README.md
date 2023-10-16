@@ -6,7 +6,7 @@
 - **Organization:** University of Michigan, Computer Science and Engineering
 - **Published in:** ACL 2023, Toronto, Canada
 - **Links:** [Arxiv](https://arxiv.org/abs/2307.02615), [Github](https://github.com/sled-group/Comparative-Learning/tree/main), [Dataset](https://www.dropbox.com/sh/irnw2jdw3vs9od9/AACB1SqQWeWE7hjJTfhTRhA5a?dl=0)
-- :star2: Nominated for Best Paper Award
+- :star2: Honorable Mentions for the Best Paper Award
 
 
 
@@ -89,13 +89,20 @@ optional arguments:
 
 ## Citation
 ```
-@misc{bao2023human,
-      title={Human Inspired Progressive Alignment and Comparative Learning for Grounded Word Acquisition}, 
-      author={Yuwei Bao and Barrett Martin Lattimer and Joyce Chai},
-      year={2023},
-      eprint={2307.02615},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL}
+@inproceedings{bao-etal-2023-human,
+    title = "Human Inspired Progressive Alignment and Comparative Learning for Grounded Word Acquisition",
+    author = "Bao, Yuwei  and
+      Lattimer, Barrett  and
+      Chai, Joyce",
+    booktitle = "Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)",
+    month = jul,
+    year = "2023",
+    address = "Toronto, Canada",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2023.acl-long.863",
+    doi = "10.18653/v1/2023.acl-long.863",
+    pages = "15475--15493",
+    abstract = "Human language acquisition is an efficient, supervised, and continual process. In this work, we took inspiration from how human babies acquire their first language, and developed a computational process for word acquisition through comparative learning. Motivated by cognitive findings, we generated a small dataset that enables the computation models to compare the similarities and differences of various attributes, learn to filter out and extract the common information for each shared linguistic label. We frame the acquisition of words as not only the information filtration process, but also as representation-symbol mapping. This procedure does not involve a fixed vocabulary size, nor a discriminative objective, and allows the models to continually learn more concepts efficiently. Our results in controlled experiments have shown the potential of this approach for efficient continual learning of grounded words.",
 }
 ```
 
