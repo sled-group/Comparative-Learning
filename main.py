@@ -8,6 +8,7 @@ import argparse
 import torch.nn as nn
 import torch.optim as optim
 from PIL import Image
+from tqdm import tqdm
 
 from torch.utils.data import DataLoader
 
@@ -18,15 +19,12 @@ from models import *
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 
-def my_train_clip_encoder(dt, memory, attr, lesson):
+def my_train_clip_encoder(dt, model, attr, lesson):
 	# get model
 	clip_model, clip_preprocess = clip.load("ViT-B/32", device=device)
-	model = CLIP_AE_Encode(hidden_dim_clip, latent_dim, isAE=False)
-	if lesson in memory.keys():
-		print("______________ loading_____________________")
-		model.load_state_dict(memory[lesson]['model'])
+	
 	optimizer = optim.Adam(model.parameters(), lr=lr)
-	model.train().to(device)
+	model.train()
 
 	loss_sim = None
 	loss_dif = None
@@ -37,26 +35,32 @@ def my_train_clip_encoder(dt, memory, attr, lesson):
 		ct += 1
 		if ct > 5:
 			break
-		for i in range(200):
+		progressbar = tqdm(range(200))
+		for i in progressbar:
 			# Get Inputs: sim_batch, (sim_batch, 4, 128, 128)
 			base_name_sim, images_sim = dt.get_better_similar(attr, lesson)
 			images_sim = images_sim.to(device)
+			with torch.no_grad():
+				emb = clip_model.encode_image(images_sim).float() # B, 512
 
 			# run similar model
-			z_sim = model(clip_model, images_sim)
-			centroid_sim = centroid_sim.detach()
-			centroid_sim, loss_sim = get_sim_loss(torch.vstack((z_sim, centroid_sim)))
+			z_sim, centroid_sim = model(attr, emb)
+			centroid_sim = centroid_sim.squeeze(0)
+			loss_sim = h_get_sim_loss(z_sim, centroid_sim)
 
 			# Run Difference
 			base_name_dif, images_dif = dt.get_better_similar_not(attr, lesson)
 			images_dif = images_dif.to(device)
+			with torch.no_grad():
+				emb = clip_model.encode_image(images_dif).float() # B, 512
 
 			# run difference model
-			z_dif = model(clip_model, images_dif)
+			z_dif, _ = model(attr, emb)
 			loss_dif = get_sim_not_loss(centroid_sim, z_dif)
 
 			# compute loss
 			loss = (loss_sim)**2 + (loss_dif-1)**2
+			progressbar.set_description(f"loss: {loss.item():.2f}")
 			optimizer.zero_grad()
 			loss.backward()
 			optimizer.step()
@@ -65,15 +69,11 @@ def my_train_clip_encoder(dt, memory, attr, lesson):
 				loss_dif.detach().item())
 
 	############ save model #########
-	with torch.no_grad():
-		memory[lesson] = {'model': model.to('cpu').state_dict(),
-						'arch': ['Filter', ['para_block1']],
-						'centroid': centroid_sim.to('cpu')
-						}
-	return memory
+	# whatever to save the weights
+	return model
 
 
-def my_clip_evaluation(in_path, source, memory, in_base, types, dic, vocab):
+def my_clip_evaluation(in_path, source, model, in_base, types, dic, vocab):
 	with torch.no_grad():
 		# get vocab dictionary
 		if source == 'train':
@@ -86,6 +86,8 @@ def my_clip_evaluation(in_path, source, memory, in_base, types, dic, vocab):
 		dt = MyDataset(in_path, source, in_base, types, dic, vocab,
 					clip_preprocessor=clip_preprocess)
 		data_loader = DataLoader(dt, batch_size=128, shuffle=True)
+
+		model.eval()
 
 		top3 = 0
 		top3_color = 0
@@ -101,22 +103,14 @@ def my_clip_evaluation(in_path, source, memory, in_base, types, dic, vocab):
 
 			# go through memory
 			for label in vocab:
-				if label not in memory.keys():
-					ans.append(torch.full((batch_size_i, 1), 1000.0).squeeze(1))
-					continue
 
-				# load model
-				model = CLIP_AE_Encode(hidden_dim_clip, latent_dim, isAE=False)
-				model.load_state_dict(memory[label]['model'])
-				model.to(device)
-				model.eval()
-
-				# load centroid
-				centroid_i = memory[label]['centroid'].to(device)
-				centroid_i = centroid_i.repeat(batch_size_i, 1)
+				with torch.no_grad():
+					emb = clip_model.encode_image(images).float() # B, 512
 
 				# compute stats
-				z = model(clip_model, images).squeeze(0)
+				z, centroid_i = model(label, emb)
+				z = z.squeeze(0)
+				centroid_i = centroid_i.repeat(batch_size_i, 1)
 				disi = ((z - centroid_i)**2).mean(dim=1)
 				ans.append(disi.detach().to('cpu'))
 
@@ -158,13 +152,7 @@ def my_clip_train(in_path, out_path, model_name, source, in_base,
 					clip_preprocessor=clip_preprocess)
 
 	# load encoder models from memory
-	memory = {}
-	if pre_trained_model is not None:
-		print(">>>>> loading memory >>>>>")
-		in_memory = os.path.join(out_path, pre_trained_model)
-		infile = open(in_memory, 'rb')
-		memory = pickle.load(infile)
-		infile.close()
+	model = HyperMem(lm_dim=768, knob_dim=128, input_dim=512, hidden_dim=128, output_dim=latent_dim).to(device)
 
 	best_nt = 0
 	t_tot = 0
@@ -172,22 +160,23 @@ def my_clip_train(in_path, out_path, model_name, source, in_base,
 		for tl in types_learning:  # attr
 			random.shuffle(dic[tl])
 			for vi in dic[tl]:  # lesson
+				# Train
 				print("#################### Learning: " + str(i) + " ----- " + str(vi))
 				t_start = time.time()
-				memory = my_train_clip_encoder(dt, memory, tl, vi)
+				model = my_train_clip_encoder(dt, model, tl, vi)
 				t_end = time.time()
 				t_dur = t_end - t_start
 				t_tot += t_dur
 				print("Time: ", t_dur, t_tot)
 
-				# evaluate
-				top_nt = my_clip_evaluation(in_path, 'novel_test/', memory,
+				# Evaluate
+				top_nt = my_clip_evaluation(in_path, 'novel_test/', model,
 								bsn_novel_test_1, ['rgba'], dic_train, vocab)
 				if top_nt > best_nt:
 					best_nt = top_nt
 					print("++++++++++++++ BEST NT: " + str(best_nt))
-					with open(os.path.join(out_path, model_name), 'wb') as handle:
-						pickle.dump(memory, handle, protocol=pickle.HIGHEST_PROTOCOL)
+					# with open(os.path.join(out_path, model_name), 'wb') as handle:
+					#	pickle.dump(memory, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
 if __name__ == "__main__":

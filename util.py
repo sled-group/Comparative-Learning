@@ -81,3 +81,10 @@ def get_sim_not_loss(centroid, z):
 		loss += F.mse_loss(centroid, z[i])
 
 	return loss/z.shape[0]
+
+def h_get_sim_loss(z, centroid):
+	loss = 0
+	for i in range(z.shape[0]):
+		loss += F.mse_loss(centroid, z[i])
+
+	return loss/z.shape[0]
