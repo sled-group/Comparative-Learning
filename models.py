@@ -69,12 +69,12 @@ class HyperMLP(Model):
     def forward(self, k:th.Tensor, x:th.Tensor) -> th.tensor:
         """
             Inputs:
-                k:th.Tensor             hypernet conditioning input of the form (B, H)
-                x:th.Tensor             input of the form (B, H')
+                k:th.Tensor             hypernet conditioning input of the form (B, D)
+                x:th.Tensor             input of the form (B, H)
             Outputs:
-                h:th.Tensor             encoded examples of the form (B, H'')
+                h:th.Tensor             encoded examples of the form (B, H')
         """
-        W = self.ff(k).reshape((self.out_dim, self.in_dim)) # H',H'
+        W = self.ff(k).reshape((self.out_dim, self.in_dim)) # H', H
         h = (x @ th.t(W)) # B, H'
         if self.bias: h += self.b.repeat(h.shape[0], 1)
         return h
@@ -84,8 +84,8 @@ class HyperEncoder(Model):
 
     def __init__(self, knob_dim:int=128, input_dim:int=512, hidden_dim:int=128, output_dim:int=16):
         super(HyperEncoder, self).__init__()
-        self.hyper_encoder_1 = HyperMLP(knob_dim=knob_dim, input_dim=input_dim, output_dim=hidden_dim) # B, 128
-        self.hyper_encoder_2 = HyperMLP(knob_dim=knob_dim, input_dim=hidden_dim, output_dim=output_dim) # 128, 16
+        self.hyper_encoder_1 = HyperMLP(knob_dim=knob_dim, input_dim=input_dim, output_dim=hidden_dim) # H -> 128
+        self.hyper_encoder_2 = HyperMLP(knob_dim=knob_dim, input_dim=hidden_dim, output_dim=output_dim) # 128 -> 16
         self.apply(self._init_weights)
 
     def forward(self, notion:th.Tensor, x:th.Tensor) -> th.Tensor:

@@ -9,6 +9,7 @@ import torch.nn as nn
 import torch.optim as optim
 from PIL import Image
 from tqdm import tqdm
+import wandb
 
 from torch.utils.data import DataLoader
 
@@ -16,8 +17,9 @@ from config import *
 from dataset import *
 from models import *
 
+random.seed(1337)
 device = "cuda" if torch.cuda.is_available() else "cpu"
-
+wandb_run = None
 
 def my_train_clip_encoder(dt, model, attr, lesson):
 	# get model
@@ -30,11 +32,8 @@ def my_train_clip_encoder(dt, model, attr, lesson):
 	loss_dif = None
 	loss = 10
 	ct = 0
-	centroid_sim = torch.rand(1, latent_dim).to(device)
-	while loss > 0.008:
+	while ct <= 2:
 		ct += 1
-		if ct > 5:
-			break
 		progressbar = tqdm(range(200))
 		for i in progressbar:
 			# Get Inputs: sim_batch, (sim_batch, 4, 128, 128)
@@ -64,6 +63,13 @@ def my_train_clip_encoder(dt, model, attr, lesson):
 			optimizer.zero_grad()
 			loss.backward()
 			optimizer.step()
+
+			if wandb_run:
+				wandb_run.log({
+					"train/loss": loss.detach().item(),
+					"train/loss_sim": loss_sim.detach().item(),
+					"train/loss_dif": loss_dif.detach().item()
+				})
 
 		print('[', ct, ']', loss.detach().item(), loss_sim.detach().item(),
 				loss_dif.detach().item())
@@ -139,6 +145,13 @@ def my_clip_evaluation(in_path, source, model, in_base, types, dic, vocab):
 				if (ci == 1) and (mi == 1) and (si == 1):
 					top3 += 1
 
+		if wandb_run:
+			wandb_run.log({
+				"test/top3_color": top3_color/tot_num,
+				"test/top3_material": top3_material/tot_num,
+				"test/top3_shape": top3_shape/tot_num,
+				"test/top3": top3/tot_num
+			})
 		print(tot_num, top3_color/tot_num, top3_material/tot_num,
 				top3_shape/tot_num, top3/tot_num)
 	return top3/tot_num
@@ -191,5 +204,18 @@ if __name__ == "__main__":
 				help='Pretrained model import name (saved in outpath)', required=False)
 	args = argparser.parse_args()
 
+	wandb.login()
+	config = {
+		"lr": lr,
+		"sim_batch": sim_batch,
+		"gen_batch": gen_batch,
+		"epochs": epochs,
+		"batch_size": batch_size,
+		"latent_dim": latent_dim
+	}
+	wandb_run = wandb.init(name="hypernet", project="hypernet-concept-learning", config=config)
+
 	my_clip_train(args.in_path, args.out_path, args.model_name,
 				'novel_train/', bn_n_train, ['rgba'], dic_train, vocabs, args.pre_train)
+
+	

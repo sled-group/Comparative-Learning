@@ -91,13 +91,12 @@ bsn_test_2_old = "bsn_test_2_old.txt"
 
 # train parameters
 resize = 224
-lr = 1e-3
+lr = 5e-4
 epochs = 50
 
 sim_batch = 128
 gen_batch = 128
 batch_size = 32
-
 
 # model architecture
 hidden_dim_clip = 128
