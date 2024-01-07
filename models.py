@@ -114,8 +114,8 @@ class HyperMem(Model):
         """
         self._d = nn.Parameter(th.empty(0))
         self._d.requires_grad = False
-        self.filter = HyperMLP(knob_dim=knob_dim, input_dim=input_dim, output_dim=input_dim, bias=False)
-        self.centroid = nn.Linear(in_features=knob_dim, out_features=latent_dim)
+        self.filter = nn.Linear(in_features=knob_dim, out_features=input_dim)
+        self.centroid = nn.Linear(in_features=knob_dim, out_features=input_dim)
         self.embedding = nn.Sequential(nn.Linear(lm_dim, lm_dim//2), nn.Linear(lm_dim//2, knob_dim))
         self.encoder = HyperEncoder(knob_dim=knob_dim, input_dim=input_dim, hidden_dim=hidden_dim, output_dim=output_dim)
         self.bert_tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
@@ -138,9 +138,10 @@ class HyperMem(Model):
             e_notion = self.bert(t_notion.input_ids).last_hidden_state[:, 0]
         e_notion = F.relu(self.embedding(e_notion)) # 1, 128
         # Encoding
-        c = self.centroid(e_notion)
-        h = self.filter(e_notion, x)
+        centroid = self.centroid(e_notion)
+        filter = self.filter(e_notion)
+        h = x * filter # B, 512
         z = self.encoder(e_notion, h)
-        return z, c
+        return z, centroid
 
 

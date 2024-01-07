@@ -21,7 +21,7 @@ random.seed(1337)
 device = "cuda" if torch.cuda.is_available() else "cpu"
 wandb_run = None
 
-def my_train_clip_encoder(dt, model, attr, lesson):
+def my_train_clip_encoder(dt, model, attr, lesson, memory):
 	# get model
 	clip_model, clip_preprocess = clip.load("ViT-B/32", device=device)
 	
@@ -32,7 +32,11 @@ def my_train_clip_encoder(dt, model, attr, lesson):
 	loss_dif = None
 	loss = 10
 	ct = 0
-	while ct <= 2:
+	
+	memory[lesson] = {}
+	centroid_sim = torch.rand(1, latent_dim).to(device)
+
+	while ct <= 5:
 		ct += 1
 		progressbar = tqdm(range(200))
 		for i in progressbar:
@@ -43,9 +47,9 @@ def my_train_clip_encoder(dt, model, attr, lesson):
 				emb = clip_model.encode_image(images_sim).float() # B, 512
 
 			# run similar model
-			z_sim, centroid_sim = model(attr, emb)
-			centroid_sim = centroid_sim.squeeze(0)
-			loss_sim = h_get_sim_loss(z_sim, centroid_sim)
+			z_sim, _ = model(attr, emb)
+			centroid_sim = centroid_sim.detach()
+			centroid_sim, loss_sim = get_sim_loss(torch.vstack((z_sim, centroid_sim)))
 
 			# Run Difference
 			base_name_dif, images_dif = dt.get_better_similar_not(attr, lesson)
@@ -73,13 +77,14 @@ def my_train_clip_encoder(dt, model, attr, lesson):
 
 		print('[', ct, ']', loss.detach().item(), loss_sim.detach().item(),
 				loss_dif.detach().item())
-
+		
 	############ save model #########
 	# whatever to save the weights
+	memory[lesson]["centroid"] = centroid_sim
 	return model
 
 
-def my_clip_evaluation(in_path, source, model, in_base, types, dic, vocab):
+def my_clip_evaluation(in_path, source, model, in_base, types, dic, vocab, memory):
 	with torch.no_grad():
 		# get vocab dictionary
 		if source == 'train':
@@ -110,12 +115,18 @@ def my_clip_evaluation(in_path, source, model, in_base, types, dic, vocab):
 			# go through memory
 			for label in vocab:
 
+				# Skip unlearned lesson
+				if label not in memory.keys():
+					ans.append(torch.full((batch_size_i, 1), 1000.0).squeeze(1))
+					continue
+
 				with torch.no_grad():
 					emb = clip_model.encode_image(images).float() # B, 512
 
 				# compute stats
-				z, centroid_i = model(label, emb)
+				z, _ = model(label, emb)
 				z = z.squeeze(0)
+				centroid_i = memory[label]["centroid"]
 				centroid_i = centroid_i.repeat(batch_size_i, 1)
 				disi = ((z - centroid_i)**2).mean(dim=1)
 				ans.append(disi.detach().to('cpu'))
@@ -169,6 +180,7 @@ def my_clip_train(in_path, out_path, model_name, source, in_base,
 
 	best_nt = 0
 	t_tot = 0
+	memory = {}
 	for i in range(epochs):
 		for tl in types_learning:  # attr
 			random.shuffle(dic[tl])
@@ -176,7 +188,7 @@ def my_clip_train(in_path, out_path, model_name, source, in_base,
 				# Train
 				print("#################### Learning: " + str(i) + " ----- " + str(vi))
 				t_start = time.time()
-				model = my_train_clip_encoder(dt, model, tl, vi)
+				model = my_train_clip_encoder(dt, model, tl, vi, memory)
 				t_end = time.time()
 				t_dur = t_end - t_start
 				t_tot += t_dur
@@ -184,7 +196,7 @@ def my_clip_train(in_path, out_path, model_name, source, in_base,
 
 				# Evaluate
 				top_nt = my_clip_evaluation(in_path, 'novel_test/', model,
-								bsn_novel_test_1, ['rgba'], dic_train, vocab)
+								bsn_novel_test_1, ['rgba'], dic_train, vocab, memory)
 				if top_nt > best_nt:
 					best_nt = top_nt
 					print("++++++++++++++ BEST NT: " + str(best_nt))
@@ -204,6 +216,7 @@ if __name__ == "__main__":
 				help='Pretrained model import name (saved in outpath)', required=False)
 	args = argparser.parse_args()
 
+	"""
 	wandb.login()
 	config = {
 		"lr": lr,
@@ -214,7 +227,7 @@ if __name__ == "__main__":
 		"latent_dim": latent_dim
 	}
 	wandb_run = wandb.init(name="hypernet", project="hypernet-concept-learning", config=config)
-
+	"""
 	my_clip_train(args.in_path, args.out_path, args.model_name,
 				'novel_train/', bn_n_train, ['rgba'], dic_train, vocabs, args.pre_train)
 
