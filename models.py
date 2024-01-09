@@ -66,6 +66,17 @@ class HyperMLP(Model):
         if self.bias: self.b = nn.Parameter(th.zeros((output_dim)))
         self.apply(self._init_weights)
 
+    def get_weights(self, k:th.Tensor) -> th.Tensor:
+        """
+            Inputs:
+                k:th.Tensor             hypernet conditioning input of the form (B, D)
+            Outputs:
+                w:th.Tensor             predicted MLP weights (1, in_dim*out_dim)
+        """
+        w = [self.ff(k)]
+        if self.bias: w.append(self.b) 
+        return w
+
     def forward(self, k:th.Tensor, x:th.Tensor) -> th.tensor:
         """
             Inputs:
@@ -120,9 +131,38 @@ class HyperMem(Model):
         self.encoder = HyperEncoder(knob_dim=knob_dim, input_dim=input_dim, hidden_dim=hidden_dim, output_dim=output_dim)
         self.bert_tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
         self.bert = BertModel.from_pretrained("bert-base-uncased")
-        self.bert.requires_grad = False
+        for name, param in self.bert.named_parameters(): param.requires_grad = False
         self.bert.eval()
-        
+
+    def get_weights(self, notion:str) -> dict:
+        """
+            Get all the hypernetwork weights predicted from an input task embedding
+            Inputs:
+                k:th.Tensor             hypernet conditioning input of the form (B, D)
+            Outputs:
+                {}:dict                 all the network weights
+        """
+        # Notion embedding
+        with th.no_grad():
+            t_notion = self.bert_tokenizer(notion, return_tensors="pt").to(self._d.device)
+            e_notion = self.bert(t_notion.input_ids).last_hidden_state[:, 0]
+        k = F.relu(self.embedding(e_notion)) # 1, 128
+        # HyperNet
+        w_filt = self.filter(k)
+        w_embedding1 = self.embedding[0].weight
+        w_embedding2 = self.embedding[1].weight
+        w_enc1, bias_enc1 = self.encoder.hyper_encoder_1.get_weights(k)
+        w_enc2, bias_enc2 = self.encoder.hyper_encoder_2.get_weights(k)
+        return {
+            "filter": w_filt,
+            "embedding1": w_embedding1,
+            "embedding2": w_embedding2,
+            "encoder1": w_enc1,
+            "bias_enc1": bias_enc1,
+            "encoder2": w_enc2,
+            "bias_enc2": bias_enc2,
+        }
+
     def forward(self, notion:str, x:th.Tensor) -> (th.Tensor, th.Tensor):
         """
             Inputs:

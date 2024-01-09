@@ -33,7 +33,6 @@ def my_train_clip_encoder(dt, model, attr, lesson, memory):
 	loss = 10
 	ct = 0
 	
-	memory[lesson] = {}
 	centroid_sim = torch.rand(1, latent_dim).to(device)
 
 	while ct <= 5:
@@ -47,7 +46,7 @@ def my_train_clip_encoder(dt, model, attr, lesson, memory):
 				emb = clip_model.encode_image(images_sim).float() # B, 512
 
 			# run similar model
-			z_sim, _ = model(attr, emb)
+			z_sim, _ = model(lesson, emb)
 			centroid_sim = centroid_sim.detach()
 			centroid_sim, loss_sim = get_sim_loss(torch.vstack((z_sim, centroid_sim)))
 
@@ -58,7 +57,7 @@ def my_train_clip_encoder(dt, model, attr, lesson, memory):
 				emb = clip_model.encode_image(images_dif).float() # B, 512
 
 			# run difference model
-			z_dif, _ = model(attr, emb)
+			z_dif, _ = model(lesson, emb)
 			loss_dif = get_sim_not_loss(centroid_sim, z_dif)
 
 			# compute loss
@@ -80,7 +79,8 @@ def my_train_clip_encoder(dt, model, attr, lesson, memory):
 		
 	############ save model #########
 	# whatever to save the weights
-	memory[lesson]["centroid"] = centroid_sim
+	memory[lesson] = {"centroid": centroid_sim}
+	# memory[lesson]["params"] = model.get_weights(lesson)
 	return model
 
 
@@ -216,7 +216,6 @@ if __name__ == "__main__":
 				help='Pretrained model import name (saved in outpath)', required=False)
 	args = argparser.parse_args()
 
-	"""
 	wandb.login()
 	config = {
 		"lr": lr,
@@ -227,7 +226,7 @@ if __name__ == "__main__":
 		"latent_dim": latent_dim
 	}
 	wandb_run = wandb.init(name="hypernet", project="hypernet-concept-learning", config=config)
-	"""
+
 	my_clip_train(args.in_path, args.out_path, args.model_name,
 				'novel_train/', bn_n_train, ['rgba'], dic_train, vocabs, args.pre_train)
 
