@@ -10,6 +10,7 @@ import torch.optim as optim
 from PIL import Image
 from tqdm import tqdm
 import wandb
+import torch.nn.functional as F
 
 from torch.utils.data import DataLoader
 
@@ -22,6 +23,7 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 wandb_run = None
 
 def my_train_clip_encoder(dt, model, attr, lesson, memory):
+
 	# get model
 	clip_model, clip_preprocess = clip.load("ViT-B/32", device=device)
 	
@@ -62,27 +64,56 @@ def my_train_clip_encoder(dt, model, attr, lesson, memory):
 
 			# compute loss
 			loss = (loss_sim)**2 + (loss_dif-1)**2
+
+			log = {
+				"train/loss": loss.detach().item(),
+				"train/loss_sim": loss_sim.detach().item(),
+				"train/loss_dif": loss_dif.detach().item()
+			}
+
+			if len(memory.keys()) > 0:  # hyper-output regularization
+				regularizer_loss = compute_regularizer_loss(model, memory)
+				loss += regularizer_loss
+				log["regularizer_loss"] = regularizer_loss.detach().item()
+				log["loss"] = loss.detach().item()
+
 			progressbar.set_description(f"loss: {loss.item():.2f}")
 			optimizer.zero_grad()
 			loss.backward()
 			optimizer.step()
-
-			if wandb_run:
-				wandb_run.log({
-					"train/loss": loss.detach().item(),
-					"train/loss_sim": loss_sim.detach().item(),
-					"train/loss_dif": loss_dif.detach().item()
-				})
+			if wandb_run: wandb_run.log(log)
 
 		print('[', ct, ']', loss.detach().item(), loss_sim.detach().item(),
 				loss_dif.detach().item())
 		
 	############ save model #########
-	# whatever to save the weights
-	memory[lesson] = {"centroid": centroid_sim}
-	# memory[lesson]["params"] = model.get_weights(lesson)
+	with torch.no_grad():
+		memory[lesson] = {"centroid": centroid_sim}
+		memory[lesson]["params"] = model.get_weights(lesson)
 	return model
 
+def compute_regularizer_loss(model:HyperMem, memory:dict) -> th.Tensor:
+	"""
+		Wrt. previous task memory of weights, enforce them to the given hypermodel
+		Inputs:
+			model:HyperMem		a hypernetwork memory
+			memory:dict			a dictionary of the form {lesson1: {params:[], ...}, ...}
+		Outputs:
+			loss:th.Tensor		mean task weight loss
+	"""
+	loss = None
+	for lesson, val in memory.items(): # for each old task
+		old_params = val["params"]
+		new_params = model.get_weights(lesson)
+		task_loss = None
+		for k in old_params.keys(): # for each param
+			loss = F.mse_loss(old_params[k], new_params[k])
+			if task_loss is None: task_loss = loss
+			else: task_loss += loss
+		if loss is None: loss = task_loss
+		else: loss = torch.hstack((loss, task_loss))
+	return torch.mean(loss)
+		
 
 def my_clip_evaluation(in_path, source, model, in_base, types, dic, vocab, memory):
 	with torch.no_grad():
@@ -161,7 +192,8 @@ def my_clip_evaluation(in_path, source, model, in_base, types, dic, vocab, memor
 				"test/top3_color": top3_color/tot_num,
 				"test/top3_material": top3_material/tot_num,
 				"test/top3_shape": top3_shape/tot_num,
-				"test/top3": top3/tot_num
+				"test/top3": top3/tot_num,
+				"learned_concepts": len(memory.keys())
 			})
 		print(tot_num, top3_color/tot_num, top3_material/tot_num,
 				top3_shape/tot_num, top3/tot_num)
@@ -225,8 +257,8 @@ if __name__ == "__main__":
 		"batch_size": batch_size,
 		"latent_dim": latent_dim
 	}
-	wandb_run = wandb.init(name="hypernet", project="hypernet-concept-learning", config=config)
-
+	wandb_run = wandb.init(name="hypernet_regularized", project="hypernet-concept-learning", config=config)
+	
 	my_clip_train(args.in_path, args.out_path, args.model_name,
 				'novel_train/', bn_n_train, ['rgba'], dic_train, vocabs, args.pre_train)
 
