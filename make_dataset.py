@@ -34,9 +34,9 @@ def get_key_from_value(dictionary, target_value):
 # Build the dataset object
 def get_datasets(in_path,out_path):
     parameters_list = [
-        ['train', bn_train, ['rgba'], dic_train_logical, True, 'train_new_objects'],
-        ['train', bn_train, ['rgba'], dic_train_logical, False, 'train_var'],
+        ['train', bn_train, ['rgba'], dic_train_logical, True, 'train_new_objects']
     ]
+    # ['train', bn_train, ['rgba'], dic_train_logical, False, 'train_var'],
 
     vocab = vocabs
 
