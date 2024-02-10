@@ -1,4 +1,5 @@
 import os
+import json
 import torch
 import clip
 import time
@@ -9,15 +10,23 @@ import torch.nn as nn
 import torch.optim as optim
 from PIL import Image
 
-from torch.utils.data import DataLoader
-
-
 from config import *
 from dataset import *
 from models import *
 from util import *
 
-def my_train_clip_encoder(dt, memory, attr, lesson):
+def get_training_data(in_path):
+
+	training_data = []
+
+	return training_data
+
+def get_batches(training_data, attr, lesson):
+	images_sim = []
+	images_dif = []
+	return images_sim, images_dif
+
+def my_train_clip_encoder(training_data, memory, attr, lesson):
 	# get model
 	clip_model, clip_preprocess = clip.load("ViT-B/32", device=device)
 	model = CLIP_AE_Encode(hidden_dim_clip, latent_dim, isAE=False)
@@ -32,35 +41,31 @@ def my_train_clip_encoder(dt, memory, attr, lesson):
 	loss = 10
 	ct = 0
 	centroid_sim = torch.rand(1, latent_dim).to(device)
-	while loss > 0.008:
-		ct += 1
-		if ct > 5:
-			break
-		for i in range(200):
-			# Get Inputs: sim_batch, (sim_batch, 4, 132, 132)
-			names_sim, images_sim, names_dif, images_dif = dt.get_paired_batches(attr,lesson)
-			images_sim = images_sim.to(device)
 
-			# run similar model
-			z_sim = model(clip_model, images_sim)
-			centroid_sim = centroid_sim.detach()
-			centroid_sim, loss_sim = get_sim_loss(torch.vstack((z_sim, centroid_sim)))
+	for i in range(600):
+		# Get Inputs: sim_batch, (sim_batch, 4, 132, 132)
+		images_sim, images_dif = get_batches(training_data, attr,lesson)
+		images_sim = images_sim.to(device)
 
-			# Run Difference
-			images_dif = images_dif.to(device)
+		# run similar model
+		z_sim = model(clip_model, images_sim)
+		centroid_sim = centroid_sim.detach()
+		centroid_sim, loss_sim = get_sim_loss(torch.vstack((z_sim, centroid_sim)))
 
-			# run difference model
-			z_dif = model(clip_model, images_dif)
-			loss_dif = get_sim_not_loss(centroid_sim, z_dif)
+		# Run Difference
+		images_dif = images_dif.to(device)
 
-			# compute loss
-			loss = (loss_sim)**2 + (loss_dif-1)**2
-			optimizer.zero_grad()
-			loss.backward()
-			optimizer.step()
+		# run difference model
+		z_dif = model(clip_model, images_dif)
+		loss_dif = get_sim_not_loss(centroid_sim, z_dif)
 
-		print('[', ct, ']', loss.detach().item(), loss_sim.detach().item(),
-				loss_dif.detach().item())
+		# compute loss
+		loss = (loss_sim)**2 + (loss_dif-1)**2
+		optimizer.zero_grad()
+		loss.backward()
+		optimizer.step()
+
+	print(loss.detach().item(), loss_sim.detach().item(),loss_dif.detach().item())
 
 	############ save model #########
 	with torch.no_grad():
@@ -72,19 +77,9 @@ def my_train_clip_encoder(dt, memory, attr, lesson):
 
 def my_clip_train(in_path, out_path, n_split, model_name, source, in_base,
 				types, dic, vocab, pre_trained_model=None):  	
-	# get data
-	clip_model, clip_preprocess = clip.load("ViT-B/32", device=device)
-	dt = MyDataset(in_path, source, in_base, types, dic, vocab,
-					clip_preprocessor=clip_preprocess)
-
+	
 	# load encoder models from memory
 	memory = {}
-	if pre_trained_model is not None:
-		print(">>>>> loading memory >>>>>")
-		in_memory = os.path.join(out_path, pre_trained_model)
-		infile = open(in_memory, 'rb')
-		memory = pickle.load(infile)
-		infile.close()
 
 	t_tot = 0
 	
@@ -111,7 +106,7 @@ def my_clip_train(in_path, out_path, n_split, model_name, source, in_base,
 			for vi in dic[tl]:  # lesson
 				print("#################### Learning: " + str(i) + " ----- " + str(vi))
 				t_start = time.time()
-				memory = my_train_clip_encoder(dt, memory, tl, vi)
+				memory = my_train_clip_encoder(memory, tl, vi)
 				t_end = time.time()
 				t_dur = t_end - t_start
 				t_tot += t_dur
@@ -124,14 +119,15 @@ if __name__ == "__main__":
 	argparser = argparse.ArgumentParser()
 	argparser.add_argument('--in_path', '-i',
 				help='Data input path', required=True)
+	
 	argparser.add_argument('--out_path', '-o',
 				help='Model memory output path', required=True)
+	argparser
 	argparser.add_argument('--n_split', '-s', default=0,
 				help='Split number', required=None)
+	
 	argparser.add_argument('--model_name', '-n', default='my_best_mem',
 				help='Best model memory to be saved file name', required=False)
-	argparser.add_argument('--pre_train', '-p', default=None,
-				help='Pretrained model import name (saved in outpath)', required=False)
 	
 	argparser.add_argument('--gpu_idx', '-g', default=0,
 				help='Select gpu index', required=False)
