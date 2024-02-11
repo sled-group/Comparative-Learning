@@ -9,7 +9,7 @@ import argparse
 import torch.nn as nn
 import torch.optim as optim
 from PIL import Image
-import wandb
+
 
 from config import *
 from dataset import *
@@ -64,7 +64,7 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 			#with open(os.path.join(out_path, model_name+'_'+str(n_split)+'.pickle'), 'wb') as handle:
 			with open(os.path.join(out_path, model_name+'.pickle'), 'wb') as handle:
 				pickle.dump(memory, handle, protocol=pickle.HIGHEST_PROTOCOL)
-			wandb.finish()
+		
 			############ print time ############
 			t_end = time.time()
 			t_dur = t_end - t_start
@@ -85,7 +85,7 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 				centroid_sim = torch.rand(1, latent_dim).to(device)
 		if lesson != previous_lesson:
 			print("#################### Learning: " + str(lesson))
-			wandb.init(project='Try_1_'+attr, entity=lesson, reinit=True)
+			
 		previous_lesson = lesson
 
 		base_names_sim = batch['base_names_sim']
@@ -110,7 +110,7 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 
 		# compute loss
 		loss = (loss_sim)**2 + (loss_dif-1)**2
-		wandb.log({"loss": loss})
+
 		optimizer.zero_grad()
 		loss.backward()
 		optimizer.step()
