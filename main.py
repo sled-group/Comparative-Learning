@@ -13,7 +13,7 @@ from PIL import Image
 
 from config import *
 from dataset import *
-from models import *
+from my_models import *
 from util import *
 
 def get_training_data(in_path):
@@ -93,19 +93,21 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 
 		# Get Inputs: sim_batch, (sim_batch, 4, 132, 132)
 		images_sim = get_batches(base_names_sim, in_path, source)
+		images_sim = torch.tensor(images_sim, dtype=torch.float32)
 		images_sim = images_sim.to(device)
 
 		# run similar model
-		z_sim = model(clip_model, images_sim)
+		z_sim = model(images_sim)
 		centroid_sim = centroid_sim.detach()
 		centroid_sim, loss_sim = get_sim_loss(torch.vstack((z_sim, centroid_sim)))
 
 		# Run Difference
 		images_dif = get_batches(base_names_dif, in_path, source)
+		images_dif = torch.tensor(images_dif, dtype=torch.float32)
 		images_dif = images_dif.to(device)
 
 		# run difference model
-		z_dif = model(clip_model, images_dif)
+		z_dif = model(images_dif)
 		loss_dif = get_sim_not_loss(centroid_sim, z_dif)
 
 		# compute loss
