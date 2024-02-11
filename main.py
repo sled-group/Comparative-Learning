@@ -30,7 +30,7 @@ def get_batches(base_names, in_path, source):
 		with open(path, 'rb') as file:
 			emb = pickle.load(file)
 			images.append(emb)
-	images = torch.stack(images, dim=1)
+	images = torch.stack(images, dim = 2)
 	return images
 
 def my_train_clip_encoder(training_data, memory, in_path, out_path, source, model_name):
