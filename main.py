@@ -18,7 +18,7 @@ from util import *
 
 def get_training_data(in_path):
 	path = os.path.join(in_path, 'train_new_objects_dataset.json')
-	with open('data.json', 'r') as file:
+	with open(path, 'r') as file:
 		# Load JSON data from the file
 		training_data = json.load(file)
 	return training_data
