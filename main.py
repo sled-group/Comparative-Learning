@@ -51,7 +51,6 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 	for batch in training_data:
 		attr = batch['attribute']
 		lesson = batch['lesson']
-		wandb.init(project=str(attr), entity=str(lesson))
 		
 		if lesson != previous_lesson and previous_lesson != None:
 			############ print loss ############
@@ -65,6 +64,7 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 			#with open(os.path.join(out_path, model_name+'_'+str(n_split)+'.pickle'), 'wb') as handle:
 			with open(os.path.join(out_path, model_name+'.pickle'), 'wb') as handle:
 				pickle.dump(memory, handle, protocol=pickle.HIGHEST_PROTOCOL)
+			wandb.finish()
 			############ print time ############
 			t_end = time.time()
 			t_dur = t_end - t_start
@@ -85,6 +85,7 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 				centroid_sim = torch.rand(1, latent_dim).to(device)
 		if lesson != previous_lesson:
 			print("#################### Learning: " + str(lesson))
+			wandb.init(project=str(attr), entity=str(lesson))
 		previous_lesson = lesson
 
 		base_names_sim = batch['base_names_sim']
