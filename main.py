@@ -113,7 +113,7 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 
 	return memory
 
-def my_clip_train(in_path, out_path, n_split, source, model_name,):  	
+def my_clip_train(in_path, out_path, n_split, model_name, source):  	
 	# load training data
 	training_data = get_training_data(in_path)
 	# load encoder models from memory
