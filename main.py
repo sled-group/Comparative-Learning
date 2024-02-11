@@ -85,7 +85,7 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 				centroid_sim = torch.rand(1, latent_dim).to(device)
 		if lesson != previous_lesson:
 			print("#################### Learning: " + str(lesson))
-			wandb.init(project='try_1'+str(attr), entity=str(lesson))
+			wandb.init(project='Try_1_'+attr, entity=lesson, reinit=True)
 		previous_lesson = lesson
 
 		base_names_sim = batch['base_names_sim']
