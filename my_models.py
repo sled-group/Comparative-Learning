@@ -37,7 +37,6 @@ class CLIP_AE_Encode(nn.Module):
 		out = emb * self.filter
 		out = self.relu(self.fc1(out))
 		z = self.fc2(out)
-
 		return z
 
 class Decoder(nn.Module):

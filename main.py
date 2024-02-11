@@ -30,6 +30,7 @@ def get_batches(base_names, in_path, source):
 		with open(path, 'rb') as file:
 			emb = pickle.load(file)
 			images.append(emb)
+	images = torch.stack(images, dim=1)
 	return images
 
 def my_train_clip_encoder(training_data, memory, in_path, out_path, source, model_name):
@@ -93,7 +94,6 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 
 		# Get Inputs: sim_batch, (sim_batch, 4, 132, 132)
 		images_sim = get_batches(base_names_sim, in_path, source)
-		images_sim = torch.stack(images_sim, dim=0)
 		images_sim = images_sim.to(device)
 
 		# run similar model
@@ -103,7 +103,6 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 
 		# Run Difference
 		images_dif = get_batches(base_names_dif, in_path, source)
-		images_dif = torch.stack(images_dif, dim=0)
 		images_dif = images_dif.to(device)
 
 		# run difference model
