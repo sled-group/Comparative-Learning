@@ -125,7 +125,6 @@ def my_clip_evaluation_logical(in_path, source, memory, in_base, types, dic, voc
             images = images.to(device)
             batch_size_i = len(base_is)
 
-            rel_list = []
             ans_logical = []
             for label in logical_vocabs:
                 if label not in memory.keys():
