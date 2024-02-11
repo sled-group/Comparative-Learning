@@ -9,6 +9,7 @@ import argparse
 import torch.nn as nn
 import torch.optim as optim
 from PIL import Image
+import wandb
 
 from config import *
 from dataset import *
@@ -50,6 +51,7 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 	for batch in training_data:
 		attr = batch['attribute']
 		lesson = batch['lesson']
+		wandb.init(project=str(attr), entity=str(lesson))
 		
 		if lesson != previous_lesson and previous_lesson != None:
 			############ print loss ############
@@ -107,6 +109,7 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 
 		# compute loss
 		loss = (loss_sim)**2 + (loss_dif-1)**2
+		wandb.log({"loss": loss})
 		optimizer.zero_grad()
 		loss.backward()
 		optimizer.step()
@@ -158,8 +161,8 @@ if __name__ == "__main__":
 	
 	args = argparser.parse_args()
 	device = "cuda" if torch.cuda.is_available() else "cpu"	
-	gpu_index = int(args.gpu_idx)
-	torch.cuda.set_device(gpu_index)
-	print('gpu:',gpu_index)
+	#gpu_index = int(args.gpu_idx)
+	#torch.cuda.set_device(gpu_index)
+	#print('gpu:',gpu_index)
 		
 	my_clip_train(args.in_path, args.out_path, args.n_split, args.model_name, 'train/')
