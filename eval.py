@@ -17,11 +17,6 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 
 def my_clip_evaluation_base(in_path, source, memory, in_base, types, dic, vocab):
     with torch.no_grad():
-        # get vocab dictionary
-        if source == 'train':
-            dic = dic_test
-        else:
-            dic = dic_train
 
         # get dataset
         clip_model, clip_preprocess = clip.load("ViT-B/32", device=device)
@@ -94,11 +89,6 @@ def my_clip_evaluation_base(in_path, source, memory, in_base, types, dic, vocab)
 
 def my_clip_evaluation_logical(in_path, source, memory, in_base, types, dic, vocab):
     with torch.no_grad():
-        # get vocab dictionary
-        if source == 'train':
-            dic = dic_test
-        else:
-            dic = dic_train
 
         # get dataset
         clip_model, clip_preprocess = clip.load("ViT-B/32", device=device)
@@ -228,6 +218,8 @@ if __name__ == "__main__":
         for k in memory.keys():
             memory_complete[k] = memory[k]
 
-    #t = my_clip_evaluation_base(args.in_path, source, memory_complete, in_base, types, dic, vocab)
+    #t = my_clip_evaluation_base(args.in_path, 'train/', memory_complete, bn_train, types, dic_train, vocab)
+    #t = my_clip_evaluation_base(args.in_path, 'test/', memory_complete, bn_test, types, dic_test, vocab)
+            
+    t2 = my_clip_evaluation_logical(args.in_path, 'train/', memory_complete, bn_train, types, dic_train_logical, vocab)
     t2 = my_clip_evaluation_logical(args.in_path, 'test/', memory_complete, bn_test, types, dic_train_logical, vocab)
-    t2 = my_clip_evaluation_logical(args.in_path, 'test/', memory_complete, bn_test, types, dic_test_logical, vocab)
