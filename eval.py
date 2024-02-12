@@ -16,6 +16,8 @@ from pprint import pprint
 device = "cuda" if torch.cuda.is_available() else "cpu"
 if device == "cuda":
     print("Using GPU")
+else:
+    print("Using CPU")
 
 def my_clip_evaluation_base(in_path, source, memory, in_base, types, dic, vocab):
     with torch.no_grad():
