@@ -196,7 +196,6 @@ def my_clip_evaluation_logical(in_path, source, memory, in_base, types, dic, voc
 
     return tot_score_logical/tot_num_logical
 
-
 #TESTING
 
 types = ['rgba']
@@ -218,8 +217,8 @@ if __name__ == "__main__":
         for k in memory.keys():
             memory_complete[k] = memory[k]
 
-    #t = my_clip_evaluation_base(args.in_path, 'train/', memory_complete, bn_train, types, dic_train, vocab)
-    #t = my_clip_evaluation_base(args.in_path, 'test/', memory_complete, bn_test, types, dic_test, vocab)
+    t = my_clip_evaluation_base(args.in_path, 'train/', memory_complete, bn_train, types, dic_train, vocab)
+    t = my_clip_evaluation_base(args.in_path, 'test/', memory_complete, bn_test, types, dic_test, vocab)
             
-    t2 = my_clip_evaluation_logical(args.in_path, 'train/', memory_complete, bn_train, types, dic_train_logical, vocab)
-    t2 = my_clip_evaluation_logical(args.in_path, 'test/', memory_complete, bn_test, types, dic_train_logical, vocab)
+    #t2 = my_clip_evaluation_logical(args.in_path, 'train/', memory_complete, bn_train, types, dic_train_logical, vocab)
+    #t2 = my_clip_evaluation_logical(args.in_path, 'test/', memory_complete, bn_test, types, dic_train_logical, vocab)
