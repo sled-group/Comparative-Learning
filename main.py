@@ -91,14 +91,13 @@ def my_train_clip_encoder(training_data, n_split, memory, in_path, out_path, sou
 			model, optimizer, centroid_sim = initialize_model(lesson,memory)
 			count = 0
 		
-		previous_lesson = lesson
-		count += 1
-
 		# If loss < 0.008 skip all the remaining batches of the lesson
 		# but it has to have done at least 1000 iterations
-		if loss < 0.008 and count >= 1000:
-			while lesson == previous_lesson:
-				continue
+		if loss < 0.008 and count >= 1000 and lesson == previous_lesson:
+			continue
+
+		previous_lesson = lesson
+		count += 1
 
 		base_names_sim = batch['base_names_sim']
 		base_names_dif = batch['base_names_dif']
