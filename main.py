@@ -119,6 +119,25 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 		loss.backward()
 		optimizer.step()
 
+		############ print time ############
+		t_end = time.time()
+		t_dur = t_end - t_start
+		t_tot += t_dur
+		print("Time of one batch: ", t_dur, t_tot)
+	
+	############ LAST SAVE ############
+	############ print loss ############
+	print(loss.detach().item(), loss_sim.detach().item(),loss_dif.detach().item())
+	############ save model ############
+	with torch.no_grad():
+		memory[previous_lesson] = {'model': model.to('cpu').state_dict(),
+						'arch': ['Filter', ['para_block1']],
+						'centroid': centroid_sim.to('cpu')
+						}
+	#with open(os.path.join(out_path, model_name+'_'+str(n_split)+'.pickle'), 'wb') as handle:
+	with open(os.path.join(out_path, model_name+'.pickle'), 'wb') as handle:
+		pickle.dump(memory, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
 	return memory
 
 def my_clip_train(in_path, out_path, n_split, model_name, source):  	
