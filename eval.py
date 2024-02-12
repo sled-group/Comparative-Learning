@@ -212,10 +212,10 @@ def my_clip_evaluation_logical(in_path, source, memory, in_base, types, dic, voc
 
 #TESTING
 
-source = 'novel_test/'
-in_base = bsn_novel_test_1
+source = 'test/'
+in_base = bn_test
 types = ['rgba']
-dic = dic_test_logical
+dic = dic_train_logical
 vocab = all_vocabs
 
 if __name__ == "__main__":
