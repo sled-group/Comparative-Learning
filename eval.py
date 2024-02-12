@@ -13,9 +13,6 @@ import argparse
 
 from pprint import pprint
 
-#print(torch.backends.mps.is_available())  # the MacOS is higher than 12.3+
-#print(torch.backends.mps.is_built())  # MPS is activated
-#device = torch.device('mps')
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 def my_clip_evaluation_base(in_path, source, memory, in_base, types, dic, vocab):
@@ -212,10 +209,7 @@ def my_clip_evaluation_logical(in_path, source, memory, in_base, types, dic, voc
 
 #TESTING
 
-source = 'test/'
-in_base = bn_test
 types = ['rgba']
-dic = dic_train_logical
 vocab = all_vocabs
 
 if __name__ == "__main__":
@@ -234,5 +228,6 @@ if __name__ == "__main__":
         for k in memory.keys():
             memory_complete[k] = memory[k]
 
-    t = my_clip_evaluation_base(args.in_path, source, memory_complete, in_base, types, dic, vocab)
-    t2 = my_clip_evaluation_logical(args.in_path, source, memory_complete, in_base, types, dic, vocab)
+    #t = my_clip_evaluation_base(args.in_path, source, memory_complete, in_base, types, dic, vocab)
+    t2 = my_clip_evaluation_logical(args.in_path, 'test/', memory_complete, bn_test, types, dic_train_logical, vocab)
+    t2 = my_clip_evaluation_logical(args.in_path, 'test/', memory_complete, bn_test, types, dic_test_logical, vocab)
