@@ -84,7 +84,7 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 	t_start = time.time()
 	previous_lesson = None
 
-	for batch in training_data:
+	for i, batch in enumerate(training_data):
 		attr = batch['attribute']
 		lesson = batch['lesson']
 		
@@ -123,7 +123,7 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 		t_end = time.time()
 		t_dur = t_end - t_start
 		t_tot += t_dur
-		print("Time of one batch: ", t_dur, t_tot)
+		print("Time of one batch: ", t_dur, t_tot, 'N batch:', i)
 	
 	############ LAST SAVE ############
 	############ print loss ############
