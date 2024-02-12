@@ -30,7 +30,7 @@ def get_batches(base_names, in_path, source):
 		with open(path, 'rb') as file:
 			emb = pickle.load(file)
 			images.append(emb)
-	images = torch.stack(images, dim = 1)
+	images = torch.stack(images, dim = 0)
 	return images
 
 def my_train_clip_encoder(training_data, memory, in_path, out_path, source, model_name):
@@ -41,18 +41,7 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 	model.train().to(device)
 	centroid_sim = torch.rand(1, latent_dim).to(device)
 
-	loss_sim = None
-	loss_dif = None
-	loss = 10
-
-	t_tot = 0
-	t_start = time.time()
-	previous_lesson = None
-
-	for batch in training_data:
-		attr = batch['attribute']
-		lesson = batch['lesson']
-		
+	def save_and_initialize_new_model(lesson, previous_lesson):
 		if lesson != previous_lesson and previous_lesson != None:
 			############ print loss ############
 			print(loss.detach().item(), loss_sim.detach().item(),loss_dif.detach().item())
@@ -86,6 +75,20 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 				centroid_sim = torch.rand(1, latent_dim).to(device)
 		if lesson != previous_lesson:
 			print("#################### Learning: " + str(lesson))
+
+	loss_sim = None
+	loss_dif = None
+	loss = 10
+
+	t_tot = 0
+	t_start = time.time()
+	previous_lesson = None
+
+	for batch in training_data:
+		attr = batch['attribute']
+		lesson = batch['lesson']
+		
+		save_and_initialize_new_model(lesson,previous_lesson)
 			
 		previous_lesson = lesson
 
@@ -98,7 +101,7 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 
 		# run similar model
 		z_sim = model(images_sim)
-		centroid_sim = centroid_sim.detach()
+		centroid_sim = centroid_sim.unsqueeze(dim=0).detach()
 		centroid_sim, loss_sim = get_sim_loss(torch.vstack((z_sim, centroid_sim)))
 
 		# Run Difference
