@@ -1,15 +1,10 @@
 import os
 import json
 import torch
-import clip
 import time
 import pickle
-import random
 import argparse
-import torch.nn as nn
 import torch.optim as optim
-from PIL import Image
-
 
 from config import *
 from dataset import *
@@ -173,7 +168,7 @@ if __name__ == "__main__":
 	args = argparser.parse_args()
 	device = "cuda" if torch.cuda.is_available() else "cpu"	
 	gpu_index = int(args.gpu_idx)
-	torch.cuda.set_device(gpu_index)
+	torch.device(gpu_index)
 	print('gpu:',gpu_index)
 		
 	my_clip_train(args.in_path, args.out_path, args.n_split, args.model_name, 'train/')
