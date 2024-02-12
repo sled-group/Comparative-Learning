@@ -80,7 +80,7 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 	lesson = None
 	previous_lesson = 'first_lesson'
 	
-	for batch in training_data:
+	for i, batch in enumerate(training_data):
 
 		# Get Lesson
 		lesson = batch['lesson']
@@ -126,6 +126,7 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 		optimizer.zero_grad()
 		loss.backward()
 		optimizer.step()
+		print('B:',i,'L:',loss)
 
 	memory, t_tot = save_model(model, previous_lesson, memory, t_start, t_tot)
 
