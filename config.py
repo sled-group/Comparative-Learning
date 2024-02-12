@@ -125,7 +125,16 @@ types_logical_with_learning_4 = types_logical_with_learning[6:8]
 types_logical_with_learning_5 = types_logical_with_learning[8:10]
 types_logical_with_learning_6 = types_logical_with_learning[10:12] 
 types_logical_with_learning_7 = types_logical_with_learning[12:]
-
+attrs_split = [
+	types_logical_with_learning,
+	types_logical_with_learning_1,
+	types_logical_with_learning_2,
+	types_logical_with_learning_3,
+	types_logical_with_learning_4,
+	types_logical_with_learning_5,
+	types_logical_with_learning_6,
+	types_logical_with_learning_7
+]
 # <--- end new
 
 # Objects to remove from train test

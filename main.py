@@ -33,7 +33,7 @@ def get_batches(base_names, in_path, source):
 	images = torch.stack(images, dim = 0)
 	return images
 
-def my_train_clip_encoder(training_data, memory, in_path, out_path, source, model_name):
+def my_train_clip_encoder(training_data, n_split, memory, in_path, out_path, source, model_name):
 	# Initialize model
 	def initialize_model(lesson, memory):
 		if lesson in memory.keys():
@@ -50,7 +50,7 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 		print("#################### Learning: " + lesson)
 		return model, optimizer, centroid_sim
 	
-	def save_model(model, previous_lesson, memory, t_tot):
+	def save_model(model, previous_lesson, memory, n_split, t_tot):
 		############ print loss ############
 		print('loss:',loss.detach().item(), 'sim_loss:',loss_sim.detach().item(),'dif_loss:',loss_dif.detach().item())
 		
@@ -60,7 +60,7 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 							'arch': ['Filter', ['para_block1']],
 							'centroid': centroid_sim.to('cpu')
 							}
-		with open(os.path.join(out_path, model_name+'.pickle'), 'wb') as handle:
+		with open(os.path.join(out_path, model_name+'_'+str(n_split)+'.pickle'), 'wb') as handle:
 			pickle.dump(memory, handle, protocol=pickle.HIGHEST_PROTOCOL)
 		
 		############ print time ############
@@ -77,11 +77,12 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 
 	t_tot = 0
 	t_start = time.time()
+	count = 0
 	lesson = None
 	previous_lesson = 'first_lesson'
 	
 	for i, batch in enumerate(training_data):
-
+		
 		# Get Lesson
 		lesson = batch['lesson']
 
@@ -89,16 +90,20 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 		if previous_lesson == 'first_lesson':
 			model, optimizer, centroid_sim = initialize_model(lesson,memory)
 
-		# If loss < 0.008 skip all the remaining batches of the lesson
-		if loss < 0.008:
-			while lesson == previous_lesson:
-				continue
 		# If we finished a lesson save it and initialize new model
 		if lesson != previous_lesson and previous_lesson != 'first_lesson':
-			memory, t_tot = save_model(model, lesson, previous_lesson, memory, t_start, t_tot)
+			memory, t_tot = save_model(model, previous_lesson, memory, n_split, t_tot)
 			model, optimizer, centroid_sim = initialize_model(lesson,memory)
-
+			count = 0
+		
 		previous_lesson = lesson
+		count += 1
+
+		# If loss < 0.008 skip all the remaining batches of the lesson
+		# but it has to have done at least 1000 iterations
+		if loss < 0.008 and count >= 1000:
+			while lesson == previous_lesson:
+				continue
 
 		base_names_sim = batch['base_names_sim']
 		base_names_dif = batch['base_names_dif']
@@ -128,16 +133,24 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 		optimizer.step()
 		print('B:',i,'L:',loss)
 
-	memory, t_tot = save_model(model, previous_lesson, memory, t_start, t_tot)
+	memory, t_tot = save_model(model, previous_lesson, memory, n_split, t_tot)
 
 	return memory
 
 def my_clip_train(in_path, out_path, n_split, model_name, source):  	
 	# load training data
 	training_data = get_training_data(in_path)
+
+	# select training data
+	filtered_data = []
+	for batch in training_data:
+		if batch['attribute'] in attrs_split[n_split]:
+			filtered_data.append(batch)
+	training_data = None
+
 	# load encoder models from memory
 	memory = {}
-	memory = my_train_clip_encoder(training_data, memory, in_path, out_path, source, model_name)
+	memory = my_train_clip_encoder(filtered_data, n_split, memory, in_path, out_path, source, model_name)
 
 
 if __name__ == "__main__":
@@ -159,8 +172,8 @@ if __name__ == "__main__":
 	
 	args = argparser.parse_args()
 	device = "cuda" if torch.cuda.is_available() else "cpu"	
-	#gpu_index = int(args.gpu_idx)
-	#torch.cuda.set_device(gpu_index)
-	#print('gpu:',gpu_index)
+	gpu_index = int(args.gpu_idx)
+	torch.cuda.set_device(gpu_index)
+	print('gpu:',gpu_index)
 		
 	my_clip_train(args.in_path, args.out_path, args.n_split, args.model_name, 'train/')
