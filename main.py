@@ -170,5 +170,7 @@ if __name__ == "__main__":
 	gpu_index = int(args.gpu_idx)
 	torch.device(gpu_index)
 	print('gpu:',gpu_index)
+
+	n_split = int(args.n_split)
 		
-	my_clip_train(args.in_path, args.out_path, args.n_split, args.model_name, 'train/')
+	my_clip_train(args.in_path, args.out_path, n_split, args.model_name, 'train/')
