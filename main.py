@@ -34,47 +34,42 @@ def get_batches(base_names, in_path, source):
 	return images
 
 def my_train_clip_encoder(training_data, memory, in_path, out_path, source, model_name):
-	# get model
-	clip_model, clip_preprocess = clip.load("ViT-B/32", device=device)
-	model = CLIP_AE_Encode(hidden_dim_clip, latent_dim, isAE=False)
-	optimizer = optim.Adam(model.parameters(), lr=lr)
-	model.train().to(device)
-	centroid_sim = torch.rand(1, latent_dim).to(device)
-
-	def save_and_initialize_new_model(lesson, previous_lesson):
-		if lesson != previous_lesson and previous_lesson != None:
-			############ print loss ############
-			print(loss.detach().item(), loss_sim.detach().item(),loss_dif.detach().item())
-			############ save model ############
-			with torch.no_grad():
-				memory[previous_lesson] = {'model': model.to('cpu').state_dict(),
-								'arch': ['Filter', ['para_block1']],
-								'centroid': centroid_sim.to('cpu')
-								}
-			#with open(os.path.join(out_path, model_name+'_'+str(n_split)+'.pickle'), 'wb') as handle:
-			with open(os.path.join(out_path, model_name+'.pickle'), 'wb') as handle:
-				pickle.dump(memory, handle, protocol=pickle.HIGHEST_PROTOCOL)
+	# Initialize model
+	def initialize_model(lesson, memory):
+		if lesson in memory.keys():
+			print("______________ loading_____________________")
+			model.load_state_dict(memory[lesson]['model'])
+			optimizer = optim.Adam(model.parameters(), lr=lr)
+			model.train().to(device)
+			centroid_sim = torch.rand(1, latent_dim).to(device)
+		else:
+			model = CLIP_AE_Encode(hidden_dim_clip, latent_dim, isAE=False)
+			optimizer = optim.Adam(model.parameters(), lr=lr)
+			model.train().to(device)
+			centroid_sim = torch.rand(1, latent_dim).to(device)
+		print("#################### Learning: " + lesson)
+		return model, optimizer, centroid_sim
+	
+	def save_model(model, previous_lesson, memory, t_tot):
+		############ print loss ############
+		print('loss:',loss.detach().item(), 'sim_loss:',loss_sim.detach().item(),'dif_loss:',loss_dif.detach().item())
 		
-			############ print time ############
-			t_end = time.time()
-			t_dur = t_end - t_start
-			t_tot += t_dur
-			print("Time: ", t_dur, t_tot)
-			############ reset model ############
-			if lesson in memory.keys():
-				print("______________ loading_____________________")
-				model.load_state_dict(memory[lesson]['model'])
-				optimizer = optim.Adam(model.parameters(), lr=lr)
-				model.train().to(device)
-				centroid_sim = torch.rand(1, latent_dim).to(device)
-			else:
-				clip_model, clip_preprocess = clip.load("ViT-B/32", device=device)
-				model = CLIP_AE_Encode(hidden_dim_clip, latent_dim, isAE=False)
-				optimizer = optim.Adam(model.parameters(), lr=lr)
-				model.train().to(device)
-				centroid_sim = torch.rand(1, latent_dim).to(device)
-		if lesson != previous_lesson:
-			print("#################### Learning: " + str(lesson))
+		############ save model ############
+		with torch.no_grad():
+			memory[previous_lesson] = {'model': model.to('cpu').state_dict(),
+							'arch': ['Filter', ['para_block1']],
+							'centroid': centroid_sim.to('cpu')
+							}
+		with open(os.path.join(out_path, model_name+'.pickle'), 'wb') as handle:
+			pickle.dump(memory, handle, protocol=pickle.HIGHEST_PROTOCOL)
+		
+		############ print time ############
+		t_end = time.time()
+		t_dur = t_end - t_start
+		t_tot += t_dur
+		print("Time: ", t_dur, t_tot)
+
+		return memory, t_tot
 
 	loss_sim = None
 	loss_dif = None
@@ -82,14 +77,27 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 
 	t_tot = 0
 	t_start = time.time()
-	previous_lesson = None
+	lesson = None
+	previous_lesson = 'first_lesson'
+	
+	for batch in training_data:
 
-	for i, batch in enumerate(training_data):
-		attr = batch['attribute']
+		# Get Lesson
 		lesson = batch['lesson']
-		
-		save_and_initialize_new_model(lesson,previous_lesson)
-			
+
+		# Init model if first lesson
+		if previous_lesson == 'first_lesson':
+			model, optimizer, centroid_sim = initialize_model(lesson,memory)
+
+		# If loss < 0.008 skip all the remaining batches of the lesson
+		if loss < 0.008:
+			while lesson == previous_lesson:
+				continue
+		# If we finished a lesson save it and initialize new model
+		if lesson != previous_lesson and previous_lesson != 'first_lesson':
+			memory, t_tot = save_model(model, lesson, previous_lesson, memory, t_start, t_tot)
+			model, optimizer, centroid_sim = initialize_model(lesson,memory)
+
 		previous_lesson = lesson
 
 		base_names_sim = batch['base_names_sim']
@@ -119,24 +127,7 @@ def my_train_clip_encoder(training_data, memory, in_path, out_path, source, mode
 		loss.backward()
 		optimizer.step()
 
-		############ print time ############
-		t_end = time.time()
-		t_dur = t_end - t_start
-		t_tot += t_dur
-		print("Time of one batch: ", t_dur, t_tot, 'N batch:', i)
-	
-	############ LAST SAVE ############
-	############ print loss ############
-	print(loss.detach().item(), loss_sim.detach().item(),loss_dif.detach().item())
-	############ save model ############
-	with torch.no_grad():
-		memory[previous_lesson] = {'model': model.to('cpu').state_dict(),
-						'arch': ['Filter', ['para_block1']],
-						'centroid': centroid_sim.to('cpu')
-						}
-	#with open(os.path.join(out_path, model_name+'_'+str(n_split)+'.pickle'), 'wb') as handle:
-	with open(os.path.join(out_path, model_name+'.pickle'), 'wb') as handle:
-		pickle.dump(memory, handle, protocol=pickle.HIGHEST_PROTOCOL)
+	memory, t_tot = save_model(model, previous_lesson, memory, t_start, t_tot)
 
 	return memory
 
@@ -145,24 +136,6 @@ def my_clip_train(in_path, out_path, n_split, model_name, source):
 	training_data = get_training_data(in_path)
 	# load encoder models from memory
 	memory = {}
-	
-	if n_split == '0':
-		learning_list = types_logical_with_learning
-	elif n_split == '1':
-		learning_list = types_logical_with_learning_1
-	elif n_split == '2':	
-		learning_list = types_logical_with_learning_2
-	elif n_split == '3':
-		learning_list = types_logical_with_learning_3
-	elif n_split == '4':
-		learning_list = types_logical_with_learning_4
-	elif n_split == '5':
-		learning_list = types_logical_with_learning_5
-	elif n_split == '6':
-		learning_list = types_logical_with_learning_6
-	elif n_split == '7':
-		learning_list = types_logical_with_learning_7
-
 	memory = my_train_clip_encoder(training_data, memory, in_path, out_path, source, model_name)
 
 
