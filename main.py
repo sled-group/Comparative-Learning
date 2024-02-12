@@ -93,7 +93,7 @@ def my_train_clip_encoder(training_data, n_split, memory, in_path, out_path, sou
 		
 		# If loss < 0.008 skip all the remaining batches of the lesson
 		# but it has to have done at least 1000 iterations
-		if loss < 0.008 and count >= 10 and lesson == previous_lesson:
+		if loss < 0.008 and count >= 1000 and lesson == previous_lesson:
 			continue
 
 		previous_lesson = lesson
@@ -125,7 +125,6 @@ def my_train_clip_encoder(training_data, n_split, memory, in_path, out_path, sou
 		optimizer.zero_grad()
 		loss.backward()
 		optimizer.step()
-		print('B:',i,'L:',loss)
 
 	memory, t_tot = save_model(model, previous_lesson, memory, n_split, t_tot)
 
