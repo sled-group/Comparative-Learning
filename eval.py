@@ -227,6 +227,6 @@ if __name__ == "__main__":
     #t = my_clip_evaluation_base(args.in_path, 'train/', memory_complete, bn_train, types, dic_train, vocab)
     #t = my_clip_evaluation_base(args.in_path, 'test/', memory_complete, bn_test, types, dic_test, vocab)
             
-    t2 = my_clip_evaluation_logical(args.in_path, 'novel_test/', memory_complete, bn_n_test, types, dic_train_logical, vocab)
-    t2 = my_clip_evaluation_logical(args.in_path, 'test/', memory_complete, bn_test, types, dic_train_logical, vocab)
+    mare_logical_new_obj = my_clip_evaluation_logical(args.in_path, 'novel_test/', memory_complete, bn_n_test, types, dic_train_logical, vocab)
+    mare_logical_var = my_clip_evaluation_logical(args.in_path, 'test/', memory_complete, bn_test, types, dic_train_logical, vocab)
 
