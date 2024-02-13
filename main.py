@@ -81,7 +81,7 @@ def my_train_clip_encoder(training_data, n_split, memory, in_path, out_path, sou
 
 		# If we finished a lesson save it and initialize new model
 		if lesson != previous_lesson and previous_lesson != 'first_lesson':
-			memory, t_tot = save_model(model, previous_lesson, memory, n_split)
+			memory = save_model(model, previous_lesson, memory, n_split)
 			############ print time ############
 			t_end = time.time()
 			t_dur = t_end - t_start
