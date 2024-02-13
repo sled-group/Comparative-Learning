@@ -99,6 +99,7 @@ def my_clip_evaluation_logical(in_path, source, memory, in_base, types, dic, voc
         dt = MyDataset(in_path, source, in_base, types, dic, vocab, clip_preprocessor=clip_preprocess)
         data_loader = DataLoader(dt, batch_size=129, shuffle=True)
 
+        tot_num = 0
         score_and = 0
         tot_num_and = 0
         errors_and = dict()
@@ -143,6 +144,7 @@ def my_clip_evaluation_logical(in_path, source, memory, in_base, types, dic, voc
             _, indices_lb = base_is.topk(3)
             indices_lb, _ = torch.sort(indices_lb)
 
+            tot_num += len(indices)
             # calculate stats
             for bi in range(len(indices_lb)):
                 # object
@@ -193,7 +195,8 @@ def my_clip_evaluation_logical(in_path, source, memory, in_base, types, dic, voc
                             score_or += 1
 
             tot_score_logical = score_not + score_and + score_or
-        print('LOGICAL: ','Tot:',tot_score_logical / tot_num_logical, 
+        
+        print('LOGICAL: ','Num:',tot_num,'Tot:',tot_score_logical / tot_num_logical, 
         'Not:',score_not / tot_num_not, 'And:',score_and / tot_num_and, 'Or:',score_or / tot_num_or)
         print('AND errors:')
         pprint(errors_and)
