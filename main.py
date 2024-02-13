@@ -45,7 +45,7 @@ def my_train_clip_encoder(training_data, n_split, memory, in_path, out_path, sou
 		print("#################### Learning: " + lesson)
 		return model, optimizer, centroid_sim
 	
-	def save_model(model, previous_lesson, memory, n_split, t_tot):
+	def save_model(model, previous_lesson, memory, n_split):
 		############ print loss ############
 		print('loss:',loss.detach().item(), 'sim_loss:',loss_sim.detach().item(),'dif_loss:',loss_dif.detach().item())
 		
@@ -57,14 +57,8 @@ def my_train_clip_encoder(training_data, n_split, memory, in_path, out_path, sou
 							}
 		with open(os.path.join(out_path, model_name+'_'+str(n_split)+'.pickle'), 'wb') as handle:
 			pickle.dump(memory, handle, protocol=pickle.HIGHEST_PROTOCOL)
-		
-		############ print time ############
-		t_end = time.time()
-		t_dur = t_end - t_start
-		t_tot += t_dur
-		print("Time: ", t_dur, t_tot)
 
-		return memory, t_tot
+		return memory
 
 	loss_sim = None
 	loss_dif = None
@@ -87,7 +81,12 @@ def my_train_clip_encoder(training_data, n_split, memory, in_path, out_path, sou
 
 		# If we finished a lesson save it and initialize new model
 		if lesson != previous_lesson and previous_lesson != 'first_lesson':
-			memory, t_tot = save_model(model, previous_lesson, memory, n_split, t_tot)
+			memory, t_tot = save_model(model, previous_lesson, memory, n_split)
+			############ print time ############
+			t_end = time.time()
+			t_dur = t_end - t_start
+			t_tot += t_dur
+			print("Time: ", t_dur, t_tot)
 			model, optimizer, centroid_sim = initialize_model(lesson,memory)
 			count = 0
 		
