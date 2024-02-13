@@ -86,8 +86,8 @@ def my_clip_evaluation_base(in_path, source, memory, in_base, types, dic, vocab)
                 if (ci == 1) and (mi == 1) and (si == 1):
                     top3 += 1
 
-            print('BASIC: ','Num:',tot_num, 
-            'Color:',top3_color / tot_num, 'Material:',top3_material / tot_num, 'Shape:',top3_shape / tot_num, 'Tot:',top3 / tot_num)
+        print('BASIC: ','Num:',tot_num, 
+        'Color:',top3_color / tot_num, 'Material:',top3_material / tot_num, 'Shape:',top3_shape / tot_num, 'Tot:',top3 / tot_num)
 
     return top3 / tot_num
 
@@ -193,10 +193,10 @@ def my_clip_evaluation_logical(in_path, source, memory, in_base, types, dic, voc
                             score_or += 1
 
             tot_score_logical = score_not + score_and + score_or
-            print('LOGICAL: ','Tot:',tot_score_logical / tot_num_logical, 
-            'Not:',score_not / tot_num_not, 'And:',score_and / tot_num_and, 'Or:',score_or / tot_num_or)
-            print('AND errors:')
-            pprint(errors_and)
+        print('LOGICAL: ','Tot:',tot_score_logical / tot_num_logical, 
+        'Not:',score_not / tot_num_not, 'And:',score_and / tot_num_and, 'Or:',score_or / tot_num_or)
+        print('AND errors:')
+        pprint(errors_and)
 
     return tot_score_logical/tot_num_logical
 
