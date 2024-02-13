@@ -65,7 +65,6 @@ def my_train_clip_encoder(training_data, n_split, memory, in_path, out_path, sou
 	loss = 10
 
 	t_tot = 0
-	t_start = time.time()
 	count = 0
 	lesson = None
 	previous_lesson = 'first_lesson'
@@ -78,6 +77,7 @@ def my_train_clip_encoder(training_data, n_split, memory, in_path, out_path, sou
 		# Init model if first lesson
 		if previous_lesson == 'first_lesson':
 			model, optimizer, centroid_sim = initialize_model(lesson,memory)
+			t_start = time.time()
 
 		# If we finished a lesson save it and initialize new model
 		if lesson != previous_lesson and previous_lesson != 'first_lesson':
@@ -88,6 +88,7 @@ def my_train_clip_encoder(training_data, n_split, memory, in_path, out_path, sou
 			t_tot += t_dur
 			print("Time: ", t_dur, t_tot)
 			model, optimizer, centroid_sim = initialize_model(lesson,memory)
+			t_start = time.time()
 			count = 0
 		
 		# If loss < 0.008 skip all the remaining batches of the lesson
