@@ -125,7 +125,7 @@ def my_train_clip_encoder(training_data, n_split, memory, in_path, out_path, sou
 		loss.backward()
 		optimizer.step()
 
-	memory, t_tot = save_model(model, previous_lesson, memory, n_split, t_tot)
+	memory = save_model(model, previous_lesson, memory, n_split)
 
 	return memory
 
