@@ -19,10 +19,10 @@ if device == "cuda":
 else:
     print("Using CPU")
 
-def get_batches(base_names, in_path_to_preprocessed, source):
+def get_batches(base_names, preprocessed_images_path, source):
 	images = []
 	for base_name in base_names:
-		path = os.path.join(in_path_to_preprocessed, source, base_name+'_rgba.pickle')
+		path = os.path.join(preprocessed_images_path, source, base_name+'_rgba.pickle')
 		with open(path, 'rb') as file:
 			emb = pickle.load(file)
 			images.append(emb)
@@ -101,7 +101,7 @@ def my_clip_evaluation_base(in_path, source, memory, in_base, types, dic, vocab)
 
     return top3 / tot_num
 
-def my_clip_evaluation_logical(in_path, in_path_to_preprocessed, source, memory, in_base, types, dic, vocab):
+def my_clip_evaluation_logical(in_path, preprocessed_images_path, source, memory, in_base, types, dic, vocab):
     with torch.no_grad():
 
         # get dataset
@@ -125,7 +125,7 @@ def my_clip_evaluation_logical(in_path, in_path_to_preprocessed, source, memory,
         for base_is, names in data_loader:
 
             # Prepare the inputs
-            images = get_batches(base_is, in_path_to_preprocessed, '/train')
+            images = get_batches(base_is, preprocessed_images_path, '/train')
             images = images.to(device)
             batch_size_i = len(base_is)
 
@@ -241,6 +241,6 @@ if __name__ == "__main__":
     #t = my_clip_evaluation_base(args.in_path, 'test/', memory_complete, bn_test, types, dic_test, vocab)
     
     print('mare new obj')
-    mare_logical_new_obj = my_clip_evaluation_logical(args.in_path, args.in_path_to_preprocessed, 'novel_test/', memory_complete, bn_n_test, types, dic_train_logical, vocab)
+    mare_logical_new_obj = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'novel_test/', memory_complete, bn_n_test, types, dic_train_logical, vocab)
     #print('mare var')
     #mare_logical_var = my_clip_evaluation_logical(args.in_path, args.in_path_to_preprocessed, 'test/', memory_complete, bn_test, types, dic_test_logical, vocab)
