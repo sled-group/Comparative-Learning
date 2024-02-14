@@ -101,7 +101,7 @@ def my_clip_evaluation_base(in_path, source, memory, in_base, types, dic, vocab)
 
     return top3 / tot_num
 
-def my_clip_evaluation_logical(in_path, source, memory, in_base, types, dic, vocab):
+def my_clip_evaluation_logical(in_path, in_path_to_preprocessed, source, memory, in_base, types, dic, vocab):
     with torch.no_grad():
 
         # get dataset
@@ -125,6 +125,7 @@ def my_clip_evaluation_logical(in_path, source, memory, in_base, types, dic, voc
         for base_is, names in data_loader:
 
             # Prepare the inputs
+            images = get_batches(base_is, in_path_to_preprocessed, '/train')
             images = images.to(device)
             batch_size_i = len(base_is)
 
@@ -223,6 +224,7 @@ if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
     argparser.add_argument('--in_path', type=str, required=True)
     argparser.add_argument('--memory_path', type=str, required=True)
+    argparser.add_argument('--preprocessed_images_path', type=str, required=True)
     args = argparser.parse_args()
 
     with open(args.memory_path, 'rb') as f:
@@ -239,6 +241,6 @@ if __name__ == "__main__":
     #t = my_clip_evaluation_base(args.in_path, 'test/', memory_complete, bn_test, types, dic_test, vocab)
     
     print('mare new obj')
-    mare_logical_new_obj = my_clip_evaluation_logical(args.in_path, 'novel_test/', memory_complete, bn_n_test, types, dic_train_logical, vocab)
-    print('mare var')
-    mare_logical_var = my_clip_evaluation_logical(args.in_path, 'test/', memory_complete, bn_test, types, dic_test_logical, vocab)
+    mare_logical_new_obj = my_clip_evaluation_logical(args.in_path, args.in_path_to_preprocessed, 'novel_test/', memory_complete, bn_n_test, types, dic_train_logical, vocab)
+    #print('mare var')
+    #mare_logical_var = my_clip_evaluation_logical(args.in_path, args.in_path_to_preprocessed, 'test/', memory_complete, bn_test, types, dic_test_logical, vocab)
