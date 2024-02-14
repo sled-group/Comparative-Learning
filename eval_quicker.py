@@ -29,12 +29,11 @@ def get_batches(base_names, preprocessed_images_path, source):
 	images = torch.stack(images, dim = 0)
 	return images
 
-def my_clip_evaluation_base(in_path, source, memory, in_base, types, dic, vocab):
+def my_clip_evaluation_base(in_path, preprocessed_images_path, source, memory, in_base, types, dic, vocab):
     with torch.no_grad():
 
         # get dataset
-        clip_model, clip_preprocess = clip.load("ViT-B/32", device=device)
-        dt = MyDataset(in_path, source, in_base, types, dic, vocab, clip_preprocessor=clip_preprocess)
+        dt = MyDataset(in_path, source, in_base, types, dic, vocab)
         data_loader = DataLoader(dt, batch_size=129, shuffle=True)
 
         top3 = 0
@@ -43,8 +42,9 @@ def my_clip_evaluation_base(in_path, source, memory, in_base, types, dic, vocab)
         top3_shape = 0
         tot_num = 0
 
-        for base_is, images in data_loader:
+        for base_is, names in data_loader:
             # Prepare the inputs
+            images = get_batches(names, preprocessed_images_path, source)
             images = images.to(device)
             batch_size_i = len(base_is)
         
@@ -66,7 +66,8 @@ def my_clip_evaluation_base(in_path, source, memory, in_base, types, dic, vocab)
                 centroid_i = centroid_i.repeat(batch_size_i, 1)
 
                 # compute stats
-                z = model(clip_model, images).squeeze(0)
+                z = model(images).squeeze(0)
+                z = model(images).squeeze(1)
                 disi = ((z - centroid_i) ** 2).mean(dim=1)
                 ans.append(disi.detach().to('cpu'))
 
@@ -237,10 +238,10 @@ if __name__ == "__main__":
         for k in memory.keys():
             memory_complete[k] = memory[k]
 
-    #t = my_clip_evaluation_base(args.in_path, 'train/', memory_complete, bn_train, types, dic_train, vocab)
-    #t = my_clip_evaluation_base(args.in_path, 'test/', memory_complete, bn_test, types, dic_test, vocab)
+    t = my_clip_evaluation_base(args.in_path, args.preprocessed_images_path, 'train/', memory_complete, bn_train, types, dic_train, vocab)
+    t = my_clip_evaluation_base(args.in_path, args.preprocessed_images_path, 'test/', memory_complete, bn_test, types, dic_test, vocab)
     
-    print('mare new obj')
-    mare_logical_new_obj = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'novel_test/', memory_complete, bn_n_test, types, dic_train_logical, vocab)
-    print('mare var')
-    mare_logical_var = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'test/', memory_complete, bn_test, types, dic_test_logical, vocab)
+    #print('mare new obj')
+    #mare_logical_new_obj = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'novel_test/', memory_complete, bn_n_test, types, dic_train_logical, vocab)
+    #print('mare var')
+    #mare_logical_var = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'test/', memory_complete, bn_test, types, dic_test_logical, vocab)
