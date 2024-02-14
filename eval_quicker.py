@@ -105,8 +105,7 @@ def my_clip_evaluation_logical(in_path, preprocessed_images_path, source, memory
     with torch.no_grad():
 
         # get dataset
-        clip_model, clip_preprocess = clip.load("ViT-B/32", device=device)
-        dt = MyDataset(in_path, source, in_base, types, dic, vocab, clip_preprocessor=clip_preprocess)
+        dt = MyDataset(in_path, source, in_base, types, dic, vocab)
         data_loader = DataLoader(dt, batch_size=129, shuffle=True)
 
         tot_num = 0
@@ -145,7 +144,7 @@ def my_clip_evaluation_logical(in_path, preprocessed_images_path, source, memory
                 centroid_i = centroid_i.repeat(batch_size_i, 1)
 
                 # compute stats
-                z = model(clip_model, images).squeeze(0)
+                z = model(images).squeeze(0)
                 disi = ((z - centroid_i) ** 2).mean(dim=1)
                 ans_logical.append(disi.detach().to('cpu'))
             
