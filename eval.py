@@ -134,14 +134,11 @@ def my_clip_evaluation_logical(in_path, source, memory, in_base, types, dic, voc
 
                 # compute stats
                 z = model(clip_model, images).squeeze(0)
-                print('z',z.size())
                 disi = ((z - centroid_i) ** 2).mean(dim=1)
-                print('disi',disi.size())
                 ans_logical.append(disi.detach().to('cpu'))
             
             # get top3 incicies
             ans_logical = torch.stack(ans_logical, dim=1)
-            print(ans_logical.size())
             values, indices = ans_logical.topk(106, largest=False) # 106 is the number of logical relations true for each image
 
             _, indices_lb = base_is.topk(3)
