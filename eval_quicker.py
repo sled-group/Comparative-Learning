@@ -67,12 +67,14 @@ def my_clip_evaluation_base(in_path, source, memory, in_base, types, dic, vocab)
 
                 # compute stats
                 z = model(clip_model, images).squeeze(0)
+                print(z.size())
                 disi = ((z - centroid_i) ** 2).mean(dim=1)
                 ans.append(disi.detach().to('cpu'))
 
             # get top3 incicies
             ans = torch.stack(ans, dim=1)
             values, indices = ans.topk(3, largest=False)
+            print(base_is.size())
             _, indices_lb = base_is.topk(3)
             indices_lb, _ = torch.sort(indices_lb)
 
@@ -238,7 +240,7 @@ if __name__ == "__main__":
             memory_complete[k] = memory[k]
 
     #t = my_clip_evaluation_base(args.in_path, 'train/', memory_complete, bn_train, types, dic_train, vocab)
-    #t = my_clip_evaluation_base(args.in_path, 'test/', memory_complete, bn_test, types, dic_test, vocab)
+    t = my_clip_evaluation_base(args.in_path, 'test/', memory_complete, bn_test, types, dic_test, vocab)
     
     print('mare new obj')
     mare_logical_new_obj = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'novel_test/', memory_complete, bn_n_test, types, dic_train_logical, vocab)
