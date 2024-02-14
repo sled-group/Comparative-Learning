@@ -150,7 +150,7 @@ def my_clip_evaluation_logical(in_path, preprocessed_images_path, source, memory
             
             # get top3 incicies
             ans_logical = torch.stack(ans_logical, dim=1)
-            print(ans_logical.shape())
+            print(ans_logical.size())
             values, indices = ans_logical.topk(106, largest=False) # 106 is the number of logical relations true for each image
 
             _, indices_lb = base_is.topk(3)
