@@ -125,7 +125,7 @@ def my_clip_evaluation_logical(in_path, preprocessed_images_path, source, memory
         for base_is, names in data_loader:
 
             # Prepare the inputs
-            images = get_batches(base_is, preprocessed_images_path, '/train')
+            images = get_batches(names, preprocessed_images_path, '/train')
             images = images.to(device)
             batch_size_i = len(base_is)
 
