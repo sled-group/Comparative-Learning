@@ -67,7 +67,9 @@ def my_clip_evaluation_base(in_path, source, memory, in_base, types, dic, vocab)
 
                 # compute stats
                 z = model(clip_model, images).squeeze(0)
+                print('z',z.size())
                 disi = ((z - centroid_i) ** 2).mean(dim=1)
+                print('disi',disi.size())
                 ans.append(disi.detach().to('cpu'))
 
             # get top3 incicies
