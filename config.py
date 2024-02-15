@@ -90,7 +90,7 @@ for i in types_learning:
 						pass
 					else:
 						types_logical.append(i+' '+j+' '+h)
-pprint(types_logical)
+
 types_logical_with_learning =  types_logical + types_learning 
 
 dic_train_logical = dic_train.copy()
