@@ -286,4 +286,5 @@ if __name__ == "__main__":
     plt.title('Comparison of Scores between List 1 and List 2')
     plt.legend()
     plt.grid(True)
+    plt.savefig(pieces[0]+'plt.png')
     plt.show()
