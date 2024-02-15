@@ -122,6 +122,7 @@ for v in dic_train_logical.values():
 
 all_vocabs = vocabs + logical_vocabs
 
+
 # count n of concepts
 
 types_logical_with_learning_1 = types_logical_with_learning[0:2]
@@ -208,4 +209,25 @@ batch_size = 33
 # model architecture
 hidden_dim_clip = 128
 latent_dim = 16
+
+#%%
+# count true rels for object
+#color = 'red'
+#materal = 'metal'
+#shape = 'cube'
+#attrs = [color, materal, shape]
+#count = 0
+#for r in logical_vocabs:
+#	rel = r.split()
+#	if 'not' in rel:
+#		if rel[1] not in attrs:
+#			count += 1
+#	if 'and' in rel:
+#		if rel[0] in attrs and rel[2] in attrs:
+#			count += 1
+#	if 'or' in rel:
+#		if rel[0] in attrs or rel[2] in attrs:
+#			count += 1
+#print(count) # !!!!!! = 66
+
 
