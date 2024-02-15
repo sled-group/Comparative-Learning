@@ -69,7 +69,7 @@ def my_train_clip_encoder(training_data, n_split, memory, in_path, out_path, sou
 	lesson = None
 	previous_lesson = 'first_lesson'
 	
-	for i, batch in enumerate(training_data):
+	for batch in training_data:
 		
 		# Get Lesson
 		lesson = batch['lesson']
