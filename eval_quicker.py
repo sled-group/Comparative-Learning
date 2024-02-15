@@ -239,13 +239,17 @@ if __name__ == "__main__":
             memory_complete[k] = memory[k]
 
     # simpe concepts
+    print('*************')
     print('mare new obj')
     mare_new_obj = my_clip_evaluation_base(args.in_path, args.preprocessed_images_path, 'novel_test/', memory_complete, bn_n_test, types, dic_train, vocab)
+    print('*************')
     print('mare var')
     mare_var = my_clip_evaluation_base(args.in_path, args.preprocessed_images_path, 'test/', memory_complete, bn_test, types, dic_test, vocab)
     
     # logical concepts
+    print('*************')
     print('mare new obj')
     mare_logical_new_obj = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'novel_test/', memory_complete, bn_n_test, types, dic_train_logical, vocab)
+    print('*************')
     print('mare var')
     mare_logical_var = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'test/', memory_complete, bn_test, types, dic_test_logical, vocab)
