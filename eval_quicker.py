@@ -249,7 +249,7 @@ if __name__ == "__main__":
     # logical concepts
     log_new_obj = []
     log_var = []
-    for nk in range(1,3):
+    for nk in range(1, 107):
         print(nk)
         mare_logical_new_obj = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'novel_test/', memory_complete, bn_n_test, types, dic_train_logical, vocab, nk)
         mare_logical_var = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'test/', memory_complete, bn_test, types, dic_test_logical, vocab, nk)
@@ -271,19 +271,19 @@ if __name__ == "__main__":
     # Plotting the scores
     plt.figure(figsize=(10, 6))
 
-    plt.plot(tot1, label='Tot List 1', marker='o')
-    plt.plot(not1, label='Not List 1', marker='o')
-    plt.plot(and1, label='And List 1', marker='o')
-    plt.plot(or1, label='Or List 1', marker='o')
+    plt.plot(tot1, label='Tot New Objects', marker='o')
+    plt.plot(not1, label='Not New Objects', marker='o')
+    plt.plot(and1, label='And New Objects', marker='o')
+    plt.plot(or1, label='Or New Objects', marker='o')
 
-    plt.plot(tot2, label='Tot List 2', linestyle='dashed', marker='x')
-    plt.plot(not2, label='Not List 2', linestyle='dashed', marker='x')
-    plt.plot(and2, label='And List 2', linestyle='dashed', marker='x')
-    plt.plot(or2, label='Or List 2', linestyle='dashed', marker='x')
+    plt.plot(tot2, label='Tot Variation', linestyle='dashed', marker='x')
+    plt.plot(not2, label='Not Variation', linestyle='dashed', marker='x')
+    plt.plot(and2, label='And Variation', linestyle='dashed', marker='x')
+    plt.plot(or2, label='Or Variation', linestyle='dashed', marker='x')
 
-    plt.xlabel('Element Index')
-    plt.ylabel('Scores')
-    plt.title('Comparison of Scores between List 1 and List 2')
+    plt.xlabel('Top k Logical Relations')
+    plt.ylabel('Accuracy Scores')
+    plt.title('Logical Relation Recognition')
     plt.legend()
     plt.grid(True)
     plt.savefig(pieces[0]+'plt.png')
