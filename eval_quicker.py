@@ -250,6 +250,7 @@ if __name__ == "__main__":
     log_new_obj = []
     log_var = []
     for nk in range(107):
+        print(nk)
         mare_logical_new_obj = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'novel_test/', memory_complete, bn_n_test, types, dic_train_logical, vocab, nk)
         mare_logical_var = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'test/', memory_complete, bn_test, types, dic_test_logical, vocab, nk)
         log_new_obj.append(mare_logical_new_obj)
@@ -286,4 +287,3 @@ if __name__ == "__main__":
     plt.legend()
     plt.grid(True)
     plt.show()
-
