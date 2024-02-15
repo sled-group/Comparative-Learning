@@ -33,7 +33,7 @@ def get_key_from_value(dictionary, target_value):
 # Build the dataset object
 def get_datasets(in_path,out_path):
     parameters_list = [
-        ['train', bn_train, ['rgba'], dic_train_logical, True, 'train_new_objects_1000']
+        ['train', bn_train, ['rgba'], dic_train_logical, True, 'train_new_objects_600']
     ]
     # ['train', bn_train, ['rgba'], dic_train_logical, False, 'train_var'],
 
@@ -50,7 +50,7 @@ def get_datasets(in_path,out_path):
         for lesson in tqdm(all_vocabs):
             attribute = get_key_from_value(dic_train_logical, lesson)
             
-            for i in range(1000):               
+            for i in range(600):               
                 base_names_sim, base_names_dif = dt.get_paired_batches_names(attribute, lesson, 132, train)
                 new_batches.append(
                     {
