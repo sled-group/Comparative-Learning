@@ -130,6 +130,7 @@ def my_clip_evaluation_logical(in_path, preprocessed_images_path, source, memory
             batch_size_i = len(base_is)
 
             ans_logical = []
+            # for each lable
             for label in logical_vocabs:
                 if label not in memory.keys():
                     ans_logical.append(torch.full((batch_size_i, 1), 1000.0).squeeze(1))
@@ -145,13 +146,17 @@ def my_clip_evaluation_logical(in_path, preprocessed_images_path, source, memory
                 centroid_i = centroid_i.repeat(batch_size_i, 1)
 
                 # compute stats
+                # embed all the images
                 z = model(images).squeeze(0)
                 z = model(images).squeeze(1)
+                # compute the distance between each image embedded with the concept model and the concept centroid
                 disi = ((z - centroid_i) ** 2).mean(dim=1)
                 ans_logical.append(disi.detach().to('cpu'))
+                # for each concept we have a list of distances between the images and the concept centroid
             
             # get top3 incicies
             ans_logical = torch.stack(ans_logical, dim=1)
+            # for each image get the nk smallest distances indexes, so we can check the logical relations
             values, indices = ans_logical.topk(nk, largest=False) # 106 is the number of logical relations true for each image
 
             _, indices_lb = base_is.topk(3)
@@ -160,13 +165,14 @@ def my_clip_evaluation_logical(in_path, preprocessed_images_path, source, memory
             tot_num += len(indices)
             # calculate stats
             for bi in range(len(indices_lb)):
-                # object
+                # for each image get the features
                 color = vocabs[indices_lb[bi][0]]
                 material = vocabs[indices_lb[bi][1]]
                 shape = vocabs[indices_lb[bi][2]]
                 atrs = [color, material, shape]
 
                 # check logical rep retrieved
+                # for the nk logical relations associated with each image check the validy wrt the image 
                 for i in indices[bi]:
                     tot_num_logical += 1
                     # check validity
@@ -272,14 +278,14 @@ if __name__ == "__main__":
     plt.figure(figsize=(10, 6))
 
     plt.plot(tot1, label='Tot New Objects')
-    plt.plot(not1, label='Not New Objects')
-    plt.plot(and1, label='And New Objects')
-    plt.plot(or1, label='Or New Objects')
+    plt.plot(not1, label='Not New Objects', linestyle='dashed')
+    plt.plot(and1, label='And New Objects', linestyle='dashed')
+    plt.plot(or1, label='Or New Objects', linestyle='dashed')
 
-    plt.plot(tot2, label='Tot Variation', linestyle='dashed')
-    plt.plot(not2, label='Not Variation', linestyle='dashed')
-    plt.plot(and2, label='And Variation', linestyle='dashed')
-    plt.plot(or2, label='Or Variation', linestyle='dashed')
+    plt.plot(tot2, label='Tot Variation', linestyle='dashdot')
+    plt.plot(not2, label='Not Variation', linestyle='dotted')
+    plt.plot(and2, label='And Variation', linestyle='dotted')
+    plt.plot(or2, label='Or Variation', linestyle='dotted')
 
     plt.xlabel('Top k Logical Relations')
     plt.ylabel('Accuracy Scores')
