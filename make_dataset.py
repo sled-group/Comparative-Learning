@@ -1,7 +1,6 @@
 #%%
 import os
 import json
-import clip 
 from config import *
 from dataset import MyDataset
 from util import *
