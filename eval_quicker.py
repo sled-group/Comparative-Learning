@@ -271,15 +271,15 @@ if __name__ == "__main__":
     # Plotting the scores
     plt.figure(figsize=(10, 6))
 
-    plt.plot(tot1, label='Tot New Objects', marker='o')
-    plt.plot(not1, label='Not New Objects', marker='o')
-    plt.plot(and1, label='And New Objects', marker='o')
-    plt.plot(or1, label='Or New Objects', marker='o')
+    plt.plot(tot1, label='Tot New Objects')
+    plt.plot(not1, label='Not New Objects')
+    plt.plot(and1, label='And New Objects')
+    plt.plot(or1, label='Or New Objects')
 
-    plt.plot(tot2, label='Tot Variation', linestyle='dashed', marker='x')
-    plt.plot(not2, label='Not Variation', linestyle='dashed', marker='x')
-    plt.plot(and2, label='And Variation', linestyle='dashed', marker='x')
-    plt.plot(or2, label='Or Variation', linestyle='dashed', marker='x')
+    plt.plot(tot2, label='Tot Variation', linestyle='dashed')
+    plt.plot(not2, label='Not Variation', linestyle='dashed')
+    plt.plot(and2, label='And Variation', linestyle='dashed')
+    plt.plot(or2, label='Or Variation', linestyle='dashed')
 
     plt.xlabel('Top k Logical Relations')
     plt.ylabel('Accuracy Scores')
