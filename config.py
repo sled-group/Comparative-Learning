@@ -1,6 +1,6 @@
 #%%
 from itertools import product
-
+from pprint import pprint
 '''
 Learning Attributes:
 	- Color (6)
@@ -90,10 +90,15 @@ for i in types_learning:
 						pass
 					else:
 						types_logical.append(i+' '+j+' '+h)
+pprint(types_logical)
 types_logical_with_learning =  types_logical + types_learning 
 
 dic_train_logical = dic_train.copy()
+rel_to_skip = ['color or color', 'material or material','shape or shape']
+
 for rel in types_logical:
+	if rel in rel_to_skip:
+		continue
 	if rel.split(' ')[0] == 'not':
 		attr = rel.split(' ')[1]
 		dic_train_logical[rel] = [f'not {x}' for x in dic_train[attr]]
@@ -114,6 +119,7 @@ for v in dic_train_logical.values():
 	for n in v:
 		if n not in others and n not in vocabs:
 			logical_vocabs.append(n)
+
 all_vocabs = vocabs + logical_vocabs
 
 # count n of concepts
