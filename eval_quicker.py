@@ -102,7 +102,7 @@ def my_clip_evaluation_base(in_path, preprocessed_images_path, source, memory, i
 
     return top3 / tot_num
 
-def my_clip_evaluation_logical(in_path, preprocessed_images_path, source, memory, in_base, types, dic, vocab):
+def my_clip_evaluation_logical(in_path, preprocessed_images_path, source, memory, in_base, types, dic, vocab, nk=106):
     with torch.no_grad():
 
         # get dataset
@@ -152,7 +152,7 @@ def my_clip_evaluation_logical(in_path, preprocessed_images_path, source, memory
             
             # get top3 incicies
             ans_logical = torch.stack(ans_logical, dim=1)
-            values, indices = ans_logical.topk(50, largest=False) # 106 is the number of logical relations true for each image
+            values, indices = ans_logical.topk(106, largest=False) # 106 is the number of logical relations true for each image
 
             _, indices_lb = base_is.topk(3)
             indices_lb, _ = torch.sort(indices_lb)
@@ -211,10 +211,10 @@ def my_clip_evaluation_logical(in_path, preprocessed_images_path, source, memory
         
         print('LOGICAL: ','Num:',tot_num,'Tot:',tot_score_logical / tot_num_logical, 
         'Not:',score_not / tot_num_not, 'And:',score_and / tot_num_and, 'Or:',score_or / tot_num_or)
-        print('AND errors:')
-        pprint(errors_and)
+        #print('AND errors:')
+        #pprint(errors_and)
 
-    return tot_score_logical/tot_num_logical
+    return tot_score_logical/tot_num_logical, score_not / tot_num_not, score_and / tot_num_and, score_or / tot_num_or
 
 #TESTING
 
@@ -239,17 +239,51 @@ if __name__ == "__main__":
             memory_complete[k] = memory[k]
 
     # simpe concepts
-    print('*************')
-    print('mare new obj')
-    mare_new_obj = my_clip_evaluation_base(args.in_path, args.preprocessed_images_path, 'novel_test/', memory_complete, bn_n_test, types, dic_train, vocab)
-    print('*************')
-    print('mare var')
-    mare_var = my_clip_evaluation_base(args.in_path, args.preprocessed_images_path, 'test/', memory_complete, bn_test, types, dic_test, vocab)
+    #print('*************')
+    #print('mare new obj')
+    #mare_new_obj = my_clip_evaluation_base(args.in_path, args.preprocessed_images_path, 'novel_test/', memory_complete, bn_n_test, types, dic_train, vocab)
+    #print('*************')
+    #print('mare var')
+    #mare_var = my_clip_evaluation_base(args.in_path, args.preprocessed_images_path, 'test/', memory_complete, bn_test, types, dic_test, vocab)
     
     # logical concepts
-    print('*************')
-    print('mare new obj')
-    mare_logical_new_obj = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'novel_test/', memory_complete, bn_n_test, types, dic_train_logical, vocab)
-    print('*************')
-    print('mare var')
-    mare_logical_var = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'test/', memory_complete, bn_test, types, dic_test_logical, vocab)
+    log_new_obj = []
+    log_var = []
+    for nk in range(107):
+        mare_logical_new_obj = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'novel_test/', memory_complete, bn_n_test, types, dic_train_logical, vocab, nk)
+        mare_logical_var = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'test/', memory_complete, bn_test, types, dic_test_logical, vocab, nk)
+        log_new_obj.append(mare_logical_new_obj)
+        log_var.append(mare_logical_var)
+    
+    import matplotlib.pyplot as plt
+
+    # Assuming you have two lists named list1 and list2
+    # Each element in the lists is a list of 4 scores: tot, not, and, or
+
+    list1 = log_new_obj  # Replace [...] with your actual data
+    list2 = log_var  # Replace [...] with your actual data
+
+    # Extracting scores from each list
+    tot1, not1, and1, or1 = zip(*list1)
+    tot2, not2, and2, or2 = zip(*list2)
+
+    # Plotting the scores
+    plt.figure(figsize=(10, 6))
+
+    plt.plot(tot1, label='Tot List 1', marker='o')
+    plt.plot(not1, label='Not List 1', marker='o')
+    plt.plot(and1, label='And List 1', marker='o')
+    plt.plot(or1, label='Or List 1', marker='o')
+
+    plt.plot(tot2, label='Tot List 2', linestyle='dashed', marker='x')
+    plt.plot(not2, label='Not List 2', linestyle='dashed', marker='x')
+    plt.plot(and2, label='And List 2', linestyle='dashed', marker='x')
+    plt.plot(or2, label='Or List 2', linestyle='dashed', marker='x')
+
+    plt.xlabel('Element Index')
+    plt.ylabel('Scores')
+    plt.title('Comparison of Scores between List 1 and List 2')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
