@@ -237,8 +237,9 @@ if __name__ == "__main__":
     with open(args.memory_path, 'rb') as f:
             memory_complete = pickle.load(f)
     for i in range(2, 8):
-        pieces = args.memory_path.split('first_try_model')
-        new_path = pieces[0] + f'first_try_model_{i}.pickle'
+        pieces = args.memory_path.split('my_best_mem')
+        #new_path = pieces[0] + f'first_try_model_{i}.pickle'
+        new_path = pieces[0] + f'my_best_mem_{i}.pickle'
         with open(new_path, 'rb') as f:
             memory = pickle.load(f)
         for k in memory.keys():
@@ -282,14 +283,14 @@ if __name__ == "__main__":
     plt.plot(and1, label='And New Objects', linestyle='dashed')
     plt.plot(or1, label='Or New Objects', linestyle='dashed')
 
-    plt.plot(tot2, label='Tot Variation', linestyle='dashdot')
+    plt.plot(tot2, label='Tot Variation')
     plt.plot(not2, label='Not Variation', linestyle='dotted')
     plt.plot(and2, label='And Variation', linestyle='dotted')
     plt.plot(or2, label='Or Variation', linestyle='dotted')
 
     plt.xlabel('Top k Logical Relations')
-    plt.ylabel('Accuracy Scores')
-    plt.title('Logical Relation Recognition')
+    plt.ylabel('Accuracy Score')
+    plt.title('Logical Pattern Recognition')
     plt.legend()
     plt.grid(True)
     plt.savefig(pieces[0]+'plt.png')
