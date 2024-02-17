@@ -239,7 +239,7 @@ if __name__ == "__main__":
     for i in range(2, 8):
         pieces = args.memory_path.split('first_try_model')
         #new_path = pieces[0] + f'first_try_model_{i}.pickle'
-        new_path = pieces[0] + f'first_try_model{i}.pickle'
+        new_path = pieces[0] + f'first_try_model_{i}.pickle'
         with open(new_path, 'rb') as f:
             memory = pickle.load(f)
         for k in memory.keys():
