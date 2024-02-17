@@ -256,13 +256,19 @@ if __name__ == "__main__":
     # logical concepts
     log_new_obj = []
     log_var = []
+
+    and_err_new_obj = list()
+    and_err_var = list()
+
     for nk in range(1, 67):
         print(nk)
         tot_score, not_score, and_score, or_score, and_err = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'train/', memory_complete, 'no_test.txt', types, dic_train_logical, vocab, nk)
         log_new_obj.append([tot_score, not_score, and_score, or_score])
+        and_err_new_obj.append([and_err['color_and_material'], and_err['color_and_shape'], and_err['material_and_shape']])
         
         tot_score, not_score, and_score, or_score, and_err = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'test/', memory_complete, bn_test, types, dic_test_logical, vocab, nk)
         log_var.append([tot_score, not_score, and_score, or_score])
+        and_err_var.append([and_err['color_and_material'], and_err['color_and_shape'], and_err['material_and_shape']])
         
     
     import matplotlib.pyplot as plt
@@ -296,4 +302,33 @@ if __name__ == "__main__":
     plt.legend()
     plt.grid(True)
     plt.savefig(pieces[0]+'plt_final.png')
+    plt.show()
+
+# and errors
+    list1 = and_err_new_obj  # Replace [...] with your actual data
+    list2 = and_err_var  # Replace [...] with your actual data
+
+    # Extracting scores from each list
+    cam1, cas1, mas1 = zip(*list1)
+    cam2, cas2, mas2 = zip(*list2)
+
+    # Plotting the scores
+    plt.figure(figsize=(10, 6))
+
+    plt.plot(cam1, label='Tot New Objects', linestyle='dashed')
+    plt.plot(cas1, label='Not New Objects', linestyle='dashed')
+    plt.plot(mas1, label='And New Objects', linestyle='dashed')
+
+
+    plt.plot(cam2, label='Tot Variation', linestyle='dotted')
+    plt.plot(cas2, label='Not Variation', linestyle='dotted')
+    plt.plot(mas2, label='And Variation', linestyle='dotted')
+    
+
+    plt.xlabel('Number of Logical Relations Retrieved')
+    plt.ylabel('Error Rate')
+    plt.title('AND Pattern Error Rate')
+    plt.legend()
+    plt.grid(True)
+    plt.savefig(pieces[0]+'plt_and.png')
     plt.show()
