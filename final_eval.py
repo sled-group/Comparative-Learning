@@ -94,7 +94,7 @@ def my_clip_evaluation_base(model, in_path, preprocessed_images_path, source, in
 
 def my_clip_evaluation_logical(model, in_path, preprocessed_images_path, source, in_base, types, dic, vocab, nk=106):
     with torch.no_grad():
-
+        count_im = 0
         # get dataset
         dt = MyDataset(in_path, source, in_base, types, dic, vocab)
         data_loader = DataLoader(dt, batch_size=129, shuffle=True)
@@ -157,6 +157,11 @@ def my_clip_evaluation_logical(model, in_path, preprocessed_images_path, source,
                     tot_num_logical += 1
                     # check validity
                     prop = logical_vocabs[i].split(' ')
+                    
+                    if count_im < 12:
+                        print(atrs)
+                        print(prop)
+                        count_im += 1
 
                     if 'not' in prop:
                         attr1 = prop[1]
@@ -243,7 +248,7 @@ if __name__ == "__main__":
     and_err_new_obj = list()
     and_err_var = list()
 
-    for nk in range(1,67):
+    for nk in range(9,11):#(1,67):
         print(nk)
         tot_score, not_score, and_score, or_score, and_err = my_clip_evaluation_logical(model, args.in_path, args.preprocessed_images_path, 'train/', 'no_test.txt', types, dic_train_logical, vocab, nk)
         log_new_obj.append([tot_score, not_score, and_score, or_score])
