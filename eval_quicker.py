@@ -217,10 +217,10 @@ def my_clip_evaluation_logical(in_path, preprocessed_images_path, source, memory
         
         print('LOGICAL: ','Num:',tot_num,'Tot:',tot_score_logical / tot_num_logical, 
         'Not:',score_not / tot_num_not, 'And:',score_and / tot_num_and, 'Or:',score_or / tot_num_or)
-        #print('AND errors:')
-        #pprint(errors_and)
+        print('AND errors:')
+        pprint(errors_and)
 
-    return tot_score_logical/tot_num_logical, score_not / tot_num_not, score_and / tot_num_and, score_or / tot_num_or
+    return tot_score_logical/tot_num_logical, score_not / tot_num_not, score_and / tot_num_and, score_or / tot_num_or, errors_and
 
 #TESTING
 
@@ -258,10 +258,12 @@ if __name__ == "__main__":
     log_var = []
     for nk in range(1, 67):
         print(nk)
-        mare_logical_new_obj = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'train/', memory_complete, 'no_test.txt', types, dic_train_logical, vocab, nk)
-        mare_logical_var = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'test/', memory_complete, bn_test, types, dic_test_logical, vocab, nk)
-        log_new_obj.append(mare_logical_new_obj)
-        log_var.append(mare_logical_var)
+        tot_score, not_score, and_score, or_score, and_err = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'train/', memory_complete, 'no_test.txt', types, dic_train_logical, vocab, nk)
+        log_new_obj.append([tot_score, not_score, and_score, or_score])
+        
+        tot_score, not_score, and_score, or_score, and_err = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'test/', memory_complete, bn_test, types, dic_test_logical, vocab, nk)
+        log_var.append([tot_score, not_score, and_score, or_score])
+        
     
     import matplotlib.pyplot as plt
 
