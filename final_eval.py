@@ -125,11 +125,8 @@ def my_clip_evaluation_logical(model, in_path, preprocessed_images_path, source,
 
                 # compute stats
                 z, centroid_i = model(label, images)
-                print(z.size())
                 z = z.squeeze(0)
-                print(z.size())
                 z = z.squeeze(1)
-                print(z.size())
                 centroid_i = centroid_i.repeat(batch_size_i, 1)
                 disi = ((z - centroid_i)**2).mean(dim=1)
                 ans_logical.append(disi.detach().to('cpu'))
@@ -158,7 +155,8 @@ def my_clip_evaluation_logical(model, in_path, preprocessed_images_path, source,
                     # check validity
                     prop = logical_vocabs[i].split(' ')
                     
-                    if count_im < 12:
+                    if count_im < 10:
+                        print('***********')
                         print(atrs)
                         print(prop)
                         count_im += 1
