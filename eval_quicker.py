@@ -104,7 +104,7 @@ def my_clip_evaluation_base(in_path, preprocessed_images_path, source, memory, i
 
 def my_clip_evaluation_logical(in_path, preprocessed_images_path, source, memory, in_base, types, dic, vocab, nk=106):
     with torch.no_grad():
-
+        count_im = 0
         # get dataset
         dt = MyDataset(in_path, source, in_base, types, dic, vocab)
         data_loader = DataLoader(dt, batch_size=129, shuffle=True)
@@ -164,7 +164,7 @@ def my_clip_evaluation_logical(in_path, preprocessed_images_path, source, memory
 
             tot_num += len(indices)
             # calculate stats
-            count_im = 0
+        
             for bi in range(len(indices_lb)):
                 # for each image get the features
                 color = vocabs[indices_lb[bi][0]]
@@ -221,8 +221,8 @@ def my_clip_evaluation_logical(in_path, preprocessed_images_path, source, memory
 
             tot_score_logical = score_not + score_and + score_or
         
-        print('LOGICAL: ','Num:',tot_num,'Tot:',tot_score_logical / tot_num_logical, 
-        'Not:',score_not / tot_num_not, 'And:',score_and / tot_num_and, 'Or:',score_or / tot_num_or)
+       # print('LOGICAL: ','Num:',tot_num,'Tot:',tot_score_logical / tot_num_logical, 
+       # 'Not:',score_not / tot_num_not, 'And:',score_and / tot_num_and, 'Or:',score_or / tot_num_or)
         # Compute and print error rate
         categories = ['color_and_material', 'color_and_shape', 'material_and_shape']
         for k in errors_and.keys():
@@ -230,8 +230,8 @@ def my_clip_evaluation_logical(in_path, preprocessed_images_path, source, memory
         for k in categories:
             if k not in errors_and.keys():
                 errors_and[k] = 0
-        print('AND errors:')
-        pprint(errors_and)
+        #print('AND errors:')
+        #pprint(errors_and)
 
     return tot_score_logical/tot_num_logical, score_not / tot_num_not, score_and / tot_num_and, score_or / tot_num_or, errors_and
 
