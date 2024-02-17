@@ -333,7 +333,7 @@ if __name__ == "__main__":
 
     plt.xlabel('Number of Logical Relations Retrieved')
     plt.ylabel('Error Rate')
-    plt.title('AND Pattern Error Rate')
+    plt.title('AND Pattern Categories Error Rate')
     plt.legend()
     plt.grid(True)
     plt.savefig(pieces[0]+'plt_and.png')
