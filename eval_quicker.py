@@ -147,8 +147,9 @@ def my_clip_evaluation_logical(in_path, preprocessed_images_path, source, memory
 
                 # compute stats
                 # embed all the images
+                z = model(images)
                 print(z.shape())
-                z = model(images).squeeze(0)
+                z = z.squeeze(0)
                 print(z.shape())
                 z = model(images).squeeze(1)
                 print(z.shape())
