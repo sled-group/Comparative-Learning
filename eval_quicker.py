@@ -288,7 +288,7 @@ if __name__ == "__main__":
     plt.plot(and2, label='And Variation', linestyle='dotted')
     plt.plot(or2, label='Or Variation', linestyle='dotted')
 
-    plt.xlabel('Top k Logical Relations')
+    plt.xlabel('Number of Logical Relations Retrieved')
     plt.ylabel('Accuracy Score')
     plt.title('Logical Pattern Recognition')
     plt.legend()
