@@ -321,9 +321,9 @@ if __name__ == "__main__":
     # Plotting the scores
     plt.figure(figsize=(10, 6))
 
-    plt.plot(cam1, label='Color AND Material')
-    plt.plot(cas1, label='Color AND Shape')
-    plt.plot(mas1, label='Material AND Shape')
+    plt.plot(cam1, label='Color AND Material', linestyle='dashed')
+    plt.plot(cas1, label='Color AND Shape', linestyle='dashed')
+    plt.plot(mas1, label='Material AND Shape', linestyle='dashed')
 
 
     plt.plot(cam2, label='Color AND Material', linestyle='dotted')
