@@ -307,7 +307,7 @@ if __name__ == "__main__":
     plt.title('Logical Pattern Recognition')
     plt.legend()
     plt.grid(True)
-    plt.savefig(pieces[0]+'plt_final.png')
+    plt.savefig(pieces[0]+'plt_final_hyper.png')
     plt.show()
 
 # and errors
@@ -336,5 +336,5 @@ if __name__ == "__main__":
     plt.title('AND Pattern Categories Error Rate')
     plt.legend()
     plt.grid(True)
-    plt.savefig(pieces[0]+'plt_and.png')
+    plt.savefig(pieces[0]+'plt_and_hyper.png')
     plt.show()
