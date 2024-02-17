@@ -252,7 +252,7 @@ if __name__ == "__main__":
         for k in memory.keys():
             memory_complete[k] = memory[k]
 
-    # simpe concepts
+    # simple concepts
     #print('*************')
     #print('mare new obj')
     #mare_new_obj = my_clip_evaluation_base(args.in_path, args.preprocessed_images_path, 'novel_test/', memory_complete, bn_n_test, types, dic_train, vocab)
