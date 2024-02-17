@@ -267,7 +267,7 @@ if __name__ == "__main__":
     and_err_new_obj = list()
     and_err_var = list()
 
-    for nk in range(1, 10):#67):
+    for nk in range(1,67):
         print(nk)
         tot_score, not_score, and_score, or_score, and_err = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'train/', memory_complete, 'no_test.txt', types, dic_train_logical, vocab, nk)
         log_new_obj.append([tot_score, not_score, and_score, or_score])
