@@ -220,7 +220,7 @@ def my_clip_evaluation_logical(in_path, preprocessed_images_path, source, memory
         # Compute and print error rate
         categories = ['color_and_material', 'color_and_shape', 'material_and_shape']
         for k in errors_and.keys():
-            errors_and[k] = errors_and[k] / tot_num_logical
+            errors_and[k] = errors_and[k] / tot_num_and
         for k in categories:
             if k not in errors_and.keys():
                 errors_and[k] = 0
