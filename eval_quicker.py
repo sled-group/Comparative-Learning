@@ -178,7 +178,7 @@ def my_clip_evaluation_logical(in_path, preprocessed_images_path, source, memory
                     tot_num_logical += 1
                     # check validity
                     prop = logical_vocabs[i].split(' ')
-                    if count_im < 1:
+                    if count_im < 11:
                         print('***********')
                         print(atrs)
                         print(prop)
