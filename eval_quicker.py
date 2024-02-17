@@ -217,6 +217,9 @@ def my_clip_evaluation_logical(in_path, preprocessed_images_path, source, memory
         
         print('LOGICAL: ','Num:',tot_num,'Tot:',tot_score_logical / tot_num_logical, 
         'Not:',score_not / tot_num_not, 'And:',score_and / tot_num_and, 'Or:',score_or / tot_num_or)
+        # Compute and print error rate
+        for k in errors_and.keys():
+            errors_and[k] = errors_and[k] / tot_num_logical
         print('AND errors:')
         pprint(errors_and)
 
@@ -260,7 +263,7 @@ if __name__ == "__main__":
     and_err_new_obj = list()
     and_err_var = list()
 
-    for nk in range(1, 67):
+    for nk in range(1, 10):#67):
         print(nk)
         tot_score, not_score, and_score, or_score, and_err = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'train/', memory_complete, 'no_test.txt', types, dic_train_logical, vocab, nk)
         log_new_obj.append([tot_score, not_score, and_score, or_score])
