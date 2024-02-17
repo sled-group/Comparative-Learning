@@ -270,7 +270,7 @@ if __name__ == "__main__":
         try:
             and_err_new_obj.append([and_err['color_and_material'], and_err['color_and_shape'], and_err['material_and_shape']])
         except KeyError as e:
-            print(e)
+            print('********',e)
             and_err[e] = 0
             and_err_new_obj.append([and_err['color_and_material'], and_err['color_and_shape'], and_err['material_and_shape']])
         
@@ -279,7 +279,7 @@ if __name__ == "__main__":
         try:
             and_err_var.append([and_err['color_and_material'], and_err['color_and_shape'], and_err['material_and_shape']])
         except KeyError as e:
-            print(e)
+            print('********',e)
             and_err[e] = 0
             and_err_var.append([and_err['color_and_material'], and_err['color_and_shape'], and_err['material_and_shape']])
     
