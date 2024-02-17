@@ -267,12 +267,21 @@ if __name__ == "__main__":
         print(nk)
         tot_score, not_score, and_score, or_score, and_err = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'train/', memory_complete, 'no_test.txt', types, dic_train_logical, vocab, nk)
         log_new_obj.append([tot_score, not_score, and_score, or_score])
-        and_err_new_obj.append([and_err['color_and_material'], and_err['color_and_shape'], and_err['material_and_shape']])
+        try:
+            and_err_new_obj.append([and_err['color_and_material'], and_err['color_and_shape'], and_err['material_and_shape']])
+        except KeyError as e:
+            print(e)
+            and_err[str(e)] = 0
+            and_err_new_obj.append([and_err['color_and_material'], and_err['color_and_shape'], and_err['material_and_shape']])
         
         tot_score, not_score, and_score, or_score, and_err = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'test/', memory_complete, bn_test, types, dic_test_logical, vocab, nk)
         log_var.append([tot_score, not_score, and_score, or_score])
-        and_err_var.append([and_err['color_and_material'], and_err['color_and_shape'], and_err['material_and_shape']])
-        
+        try:
+            and_err_var.append([and_err['color_and_material'], and_err['color_and_shape'], and_err['material_and_shape']])
+        except KeyError as e:
+            print(e)
+            and_err[str(e)] = 0
+            and_err_new_obj.append([and_err['color_and_material'], and_err['color_and_shape'], and_err['material_and_shape']])
     
     import matplotlib.pyplot as plt
 
