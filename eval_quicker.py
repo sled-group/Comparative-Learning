@@ -148,11 +148,11 @@ def my_clip_evaluation_logical(in_path, preprocessed_images_path, source, memory
                 # compute stats
                 # embed all the images
                 z = model(images)
-                print(z.shape())
+                print(z.size())
                 z = z.squeeze(0)
-                print(z.shape())
+                print(z.size())
                 z = model(images).squeeze(1)
-                print(z.shape())
+                print(z.size())
                 # compute the distance between each image embedded with the concept model and the concept centroid
                 disi = ((z - centroid_i) ** 2).mean(dim=1)
                 ans_logical.append(disi.detach().to('cpu'))
