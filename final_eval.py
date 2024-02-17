@@ -157,7 +157,8 @@ def my_clip_evaluation_logical(model, in_path, preprocessed_images_path, source,
                     tot_num_logical += 1
                     # check validity
                     prop = logical_vocabs[i].split(' ')
-
+                    print(prop)
+                    
                     if 'not' in prop:
                         attr1 = prop[1]
                         attr2 = None
