@@ -218,8 +218,12 @@ def my_clip_evaluation_logical(in_path, preprocessed_images_path, source, memory
         print('LOGICAL: ','Num:',tot_num,'Tot:',tot_score_logical / tot_num_logical, 
         'Not:',score_not / tot_num_not, 'And:',score_and / tot_num_and, 'Or:',score_or / tot_num_or)
         # Compute and print error rate
+        categories = ['color_and_material', 'color_and_shape', 'material_and_shape']
         for k in errors_and.keys():
             errors_and[k] = errors_and[k] / tot_num_logical
+        for k in categories:
+            if k not in errors_and.keys():
+                errors_and[k] = 0
         print('AND errors:')
         pprint(errors_and)
 
@@ -267,22 +271,12 @@ if __name__ == "__main__":
         print(nk)
         tot_score, not_score, and_score, or_score, and_err = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'train/', memory_complete, 'no_test.txt', types, dic_train_logical, vocab, nk)
         log_new_obj.append([tot_score, not_score, and_score, or_score])
-        try:
-            and_err_new_obj.append([and_err['color_and_material'], and_err['color_and_shape'], and_err['material_and_shape']])
-        except KeyError as e:
-            print('********',e)
-            and_err[e] = 0
-            and_err_new_obj.append([and_err['color_and_material'], and_err['color_and_shape'], and_err['material_and_shape']])
-        
+        and_err_new_obj.append([and_err['color_and_material'], and_err['color_and_shape'], and_err['material_and_shape']])
+
         tot_score, not_score, and_score, or_score, and_err = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'test/', memory_complete, bn_test, types, dic_test_logical, vocab, nk)
         log_var.append([tot_score, not_score, and_score, or_score])
-        try:
-            and_err_var.append([and_err['color_and_material'], and_err['color_and_shape'], and_err['material_and_shape']])
-        except KeyError as e:
-            print('********',e)
-            and_err[e] = 0
-            and_err_var.append([and_err['color_and_material'], and_err['color_and_shape'], and_err['material_and_shape']])
-    
+        and_err_var.append([and_err['color_and_material'], and_err['color_and_shape'], and_err['material_and_shape']])
+
     import matplotlib.pyplot as plt
 
     # Assuming you have two lists named list1 and list2
