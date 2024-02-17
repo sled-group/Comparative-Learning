@@ -94,7 +94,6 @@ def my_clip_evaluation_base(model, in_path, preprocessed_images_path, source, in
 
 def my_clip_evaluation_logical(model, in_path, preprocessed_images_path, source, in_base, types, dic, vocab, nk=106):
     with torch.no_grad():
-        count_im = 0
         # get dataset
         dt = MyDataset(in_path, source, in_base, types, dic, vocab)
         data_loader = DataLoader(dt, batch_size=129, shuffle=True)
@@ -141,6 +140,7 @@ def my_clip_evaluation_logical(model, in_path, preprocessed_images_path, source,
 
             tot_num += len(indices)
             # calculate stats
+            count_im = 0
             for bi in range(len(indices_lb)):
                 # for each image get the features
                 color = vocabs[indices_lb[bi][0]]
@@ -155,7 +155,7 @@ def my_clip_evaluation_logical(model, in_path, preprocessed_images_path, source,
                     # check validity
                     prop = logical_vocabs[i].split(' ')
                     
-                    if count_im < 10:
+                    if count_im < 1:
                         print('***********')
                         print(atrs)
                         print(prop)
