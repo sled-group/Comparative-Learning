@@ -237,9 +237,9 @@ if __name__ == "__main__":
     with open(args.memory_path, 'rb') as f:
             memory_complete = pickle.load(f)
     for i in range(2, 8):
-        pieces = args.memory_path.split('my_best_mem')
+        pieces = args.memory_path.split('first_try_model')
         #new_path = pieces[0] + f'first_try_model_{i}.pickle'
-        new_path = pieces[0] + f'my_best_mem_{i}.pickle'
+        new_path = pieces[0] + f'first_try_model{i}.pickle'
         with open(new_path, 'rb') as f:
             memory = pickle.load(f)
         for k in memory.keys():
@@ -258,7 +258,7 @@ if __name__ == "__main__":
     log_var = []
     for nk in range(1, 67):
         print(nk)
-        mare_logical_new_obj = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'novel_test/', memory_complete, bn_n_test, types, dic_train_logical, vocab, nk)
+        mare_logical_new_obj = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'train/', memory_complete, 'no_test.txt', types, dic_train_logical, vocab, nk)
         mare_logical_var = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'test/', memory_complete, bn_test, types, dic_test_logical, vocab, nk)
         log_new_obj.append(mare_logical_new_obj)
         log_var.append(mare_logical_var)
