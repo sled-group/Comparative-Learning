@@ -4,9 +4,11 @@ import clip
 
 from torch.utils.data import DataLoader
 
+from collections import OrderedDict
 from config import *
 from my_dataset import *
 from my_models import *
+from models.hypernetwork import HyperMem, count_parameters
 
 import pickle
 import argparse
@@ -29,7 +31,7 @@ def get_batches(base_names, preprocessed_images_path, source):
 	images = torch.stack(images, dim = 0)
 	return images
 
-def my_clip_evaluation_base(in_path, preprocessed_images_path, source, memory, in_base, types, dic, vocab):
+def my_clip_evaluation_base(model, in_path, preprocessed_images_path, source, in_base, types, dic, vocab):
     with torch.no_grad():
 
         # get dataset
@@ -51,26 +53,12 @@ def my_clip_evaluation_base(in_path, preprocessed_images_path, source, memory, i
             ans = []
             # go through memory
             for label in vocabs:
-                if label not in memory.keys():
-                    ans.append(torch.full((batch_size_i, 1), 1000.0).squeeze(1))
-                    continue
-
-                # load model
-                model = CLIP_AE_Encode(hidden_dim_clip, latent_dim, isAE=False)
-                model.load_state_dict(memory[label]['model'])
-                model.to(device)
-                model.eval()
-
-                # load centroid
-                centroid_i = memory[label]['centroid'].to(device)
-                centroid_i = centroid_i.repeat(batch_size_i, 1)
 
                 # compute stats
-                print(z.shape())
-                z = model(images).squeeze(0)
-                z = model(images).squeeze(1)
-                print(z.shape())
-                disi = ((z - centroid_i) ** 2).mean(dim=1)
+                z, centroid_i = model(label, images)
+                z = z.squeeze(0)
+                centroid_i = centroid_i.repeat(batch_size_i, 1)
+                disi = ((z - centroid_i)**2).mean(dim=1)
                 ans.append(disi.detach().to('cpu'))
 
             # get top3 incicies
@@ -104,7 +92,7 @@ def my_clip_evaluation_base(in_path, preprocessed_images_path, source, memory, i
 
     return top3 / tot_num
 
-def my_clip_evaluation_logical(in_path, preprocessed_images_path, source, memory, in_base, types, dic, vocab, nk=106):
+def my_clip_evaluation_logical(model, in_path, preprocessed_images_path, source, in_base, types, dic, vocab, nk=106):
     with torch.no_grad():
 
         # get dataset
@@ -134,27 +122,17 @@ def my_clip_evaluation_logical(in_path, preprocessed_images_path, source, memory
             ans_logical = []
             # for each lable
             for label in logical_vocabs:
-                if label not in memory.keys():
-                    ans_logical.append(torch.full((batch_size_i, 1), 1000.0).squeeze(1))
-                    continue 
-                # load model
-                model = CLIP_AE_Encode(hidden_dim_clip, latent_dim, isAE=False)
-                model.load_state_dict(memory[label]['model'])
-                model.to(device)
-                model.eval()
-
-                # load centroid
-                centroid_i = memory[label]['centroid'].to(device)
-                centroid_i = centroid_i.repeat(batch_size_i, 1)
 
                 # compute stats
-                # embed all the images
-                z = model(images).squeeze(0)
-                z = model(images).squeeze(1)
-                # compute the distance between each image embedded with the concept model and the concept centroid
-                disi = ((z - centroid_i) ** 2).mean(dim=1)
+                z, centroid_i = model(label, images)
+                print(z.size())
+                z = z.squeeze(0)
+                print(z.size())
+                z = z.squeeze(1)
+                print(z.size())
+                centroid_i = centroid_i.repeat(batch_size_i, 1)
+                disi = ((z - centroid_i)**2).mean(dim=1)
                 ans_logical.append(disi.detach().to('cpu'))
-                # for each concept we have a list of distances between the images and the concept centroid
             
             # get top3 incicies
             ans_logical = torch.stack(ans_logical, dim=1)
@@ -239,29 +217,25 @@ vocab = all_vocabs
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser()
     argparser.add_argument('--in_path', type=str, required=True)
-    argparser.add_argument('--memory_path', type=str, required=True)
     argparser.add_argument('--preprocessed_images_path', type=str, required=True)
+    argparser.add_argument('--checkpoint', type=str, required=True)
+    argparser.add_argument('--plot_path', type=str, required=True)
     args = argparser.parse_args()
 
-    with open(args.memory_path, 'rb') as f:
-            memory_complete = pickle.load(f)
-    for i in range(2, 8):
-        pieces = args.memory_path.split('first_try_model')
-        #new_path = pieces[0] + f'first_try_model_{i}.pickle'
-        new_path = pieces[0] + f'first_try_model_{i}.pickle'
-        with open(new_path, 'rb') as f:
-            memory = pickle.load(f)
-        for k in memory.keys():
-            memory_complete[k] = memory[k]
-
-    # simple concepts
-    #print('*************')
-    #print('mare new obj')
-    #mare_new_obj = my_clip_evaluation_base(args.in_path, args.preprocessed_images_path, 'novel_test/', memory_complete, bn_n_test, types, dic_train, vocab)
-    #print('*************')
-    #print('mare var')
-    #mare_var = my_clip_evaluation_base(args.in_path, args.preprocessed_images_path, 'test/', memory_complete, bn_test, types, dic_test, vocab)
+    # Loading model
+    clip_model, _ = clip.load("ViT-B/32", device=device)
+    model = HyperMem(lm_dim=512, knob_dim=128, input_dim=512, hidden_dim=128, output_dim=latent_dim, clip_model=clip_model).to(device)
     
+    # Adjusting weights: DDP -> single
+    weights = torch.load(args.checkpoint)
+    n_weights = OrderedDict()
+    for k in weights.keys():
+        newk = k.replace("module.", "")
+        n_weights[newk] = weights[k]
+
+    # Loading
+    model.load_state_dict(n_weights)
+
     # logical concepts
     log_new_obj = []
     log_var = []
@@ -271,11 +245,11 @@ if __name__ == "__main__":
 
     for nk in range(1,67):
         print(nk)
-        tot_score, not_score, and_score, or_score, and_err = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'train/', memory_complete, 'no_test.txt', types, dic_train_logical, vocab, nk)
+        tot_score, not_score, and_score, or_score, and_err = my_clip_evaluation_logical(model, args.in_path, args.preprocessed_images_path, 'train/', 'no_test.txt', types, dic_train_logical, vocab, nk)
         log_new_obj.append([tot_score, not_score, and_score, or_score])
         and_err_new_obj.append([and_err['color_and_material'], and_err['color_and_shape'], and_err['material_and_shape']])
 
-        tot_score, not_score, and_score, or_score, and_err = my_clip_evaluation_logical(args.in_path, args.preprocessed_images_path, 'test/', memory_complete, bn_test, types, dic_test_logical, vocab, nk)
+        tot_score, not_score, and_score, or_score, and_err = my_clip_evaluation_logical(model, args.in_path, args.preprocessed_images_path, 'test/', bn_test, types, dic_test_logical, vocab, nk)
         log_var.append([tot_score, not_score, and_score, or_score])
         and_err_var.append([and_err['color_and_material'], and_err['color_and_shape'], and_err['material_and_shape']])
 
@@ -309,10 +283,10 @@ if __name__ == "__main__":
     plt.title('Logical Pattern Recognition')
     plt.legend()
     plt.grid(True)
-    plt.savefig(pieces[0]+'plt_final_hyper.png')
+    plt.savefig(args.plot_path+'plt_final_hyper.png')
     plt.show()
 
-# and errors
+    # and errors
     list1 = and_err_new_obj  # Replace [...] with your actual data
     list2 = and_err_var  # Replace [...] with your actual data
 
@@ -338,5 +312,5 @@ if __name__ == "__main__":
     plt.title('AND Pattern Categories Error Rate')
     plt.legend()
     plt.grid(True)
-    plt.savefig(pieces[0]+'plt_and_hyper.png')
+    plt.savefig(args.plot_path+'plt_and_hyper.png')
     plt.show()
