@@ -293,5 +293,5 @@ if __name__ == "__main__":
     plt.title('Logical Pattern Recognition')
     plt.legend()
     plt.grid(True)
-    plt.savefig(pieces[0]+'plt_base.png')
+    plt.savefig(pieces[0]+'plt_final.png')
     plt.show()
