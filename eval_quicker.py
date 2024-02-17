@@ -315,14 +315,14 @@ if __name__ == "__main__":
     # Plotting the scores
     plt.figure(figsize=(10, 6))
 
-    plt.plot(cam1, label='Tot New Objects', linestyle='dashed')
-    plt.plot(cas1, label='Not New Objects', linestyle='dashed')
-    plt.plot(mas1, label='And New Objects', linestyle='dashed')
+    plt.plot(cam1, label='Color AND Material', linestyle='dashed')
+    plt.plot(cas1, label='Color AND Shape', linestyle='dashed')
+    plt.plot(mas1, label='Material AND Shape', linestyle='dashed')
 
 
-    plt.plot(cam2, label='Tot Variation', linestyle='dotted')
-    plt.plot(cas2, label='Not Variation', linestyle='dotted')
-    plt.plot(mas2, label='And Variation', linestyle='dotted')
+    plt.plot(cam2, label='Color AND Material', linestyle='dotted')
+    plt.plot(cas2, label='Color AND Shape', linestyle='dotted')
+    plt.plot(mas2, label='Material AND Shape', linestyle='dotted')
     
 
     plt.xlabel('Number of Logical Relations Retrieved')
