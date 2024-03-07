@@ -32,37 +32,29 @@ def get_key_from_value(dictionary, target_value):
 
 # Build the dataset object
 def get_datasets(in_path,out_path):
-    parameters_list = [
-        ['train', bn_train, ['rgba'], dic_train_logical, 'train_new_objects_200'],
-        ['test', bn_train, ['rgba'], dic_train_logical, 'test_new_objects_200']
-    ]
 
     vocab = vocabs
+    new_out_path = os.path.join(out_path, 'train_new_objects_200'+'_dataset.json')
+    save_list(new_out_path, []) ## After doing this one time, comment this line
+    dt = MyDataset(in_path, 'train', 'no_train', ['rgba'], dic_train_logical, vocab)
+    new_batches = []
 
-    for parameters in parameters_list:
-        split, in_base, types, dic, dataset_name = parameters
-
-        new_out_path = os.path.join(out_path, dataset_name+'_dataset.json')
-        save_list(new_out_path, []) ## After doing this one time, comment this line
-        dt = MyDataset(in_path, 'train', in_base, types, dic, vocab)
-        new_batches = []
-
-        for lesson in tqdm(all_vocabs):
-            attribute = get_key_from_value(dic_train_logical, lesson)
-            
-            for i in range(200):               
-                base_names_sim, base_names_dif = dt.get_paired_batches_names(attribute, lesson, 132, split)
-                new_batches.append(
-                    {
-                    'attribute' : attribute,
-                    'lesson' : lesson,
-                    'base_names_sim' : base_names_sim,
-                    'base_names_dif' : base_names_dif
-                    }
-                )
-        all_lessons = load_list(new_out_path)
-        all_lessons += new_batches
-        save_list(new_out_path, all_lessons)
+    for lesson in tqdm(all_vocabs):
+        attribute = get_key_from_value(dic_train_logical, lesson)
+        
+        for i in range(200):               
+            base_names_sim, base_names_dif = dt.get_paired_batches_names(attribute, lesson, 132)
+            new_batches.append(
+                {
+                'attribute' : attribute,
+                'lesson' : lesson,
+                'base_names_sim' : base_names_sim,
+                'base_names_dif' : base_names_dif
+                }
+            )
+    all_lessons = load_list(new_out_path)
+    all_lessons += new_batches
+    save_list(new_out_path, all_lessons)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Get datasets')
