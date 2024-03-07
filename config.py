@@ -144,7 +144,7 @@ attrs_split = [
 ]
 # <--- end new
 
-# Objects to remove from train test: 71 objects
+# Objects to remove from train test: 70 objects
 remove_from_train = [('green', 'rubber', 'gear'),
  ('brown', 'metal', 'torus'),
  ('green', 'plastic', 'teapot'),
