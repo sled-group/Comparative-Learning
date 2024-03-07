@@ -39,6 +39,7 @@ class MyDataset():
 		# define a set of objects to remove
 		
 		self.name_set_filtered = self.name_set.copy()
+		self.name_set_test = list()
 		for name in self.name_set:
 			split = name.split('_')
 			c = split[0]
@@ -46,6 +47,8 @@ class MyDataset():
 			s = split[2]
 			if (c,m,s) in remove_from_train:
 				self.name_set_filtered.remove(name)
+				self.name_set_test.append(name)
+
 
 	def __len__(self):
 		return len(self.names_list)
@@ -287,9 +290,11 @@ class MyDataset():
 		return base_names_sim, images_sim, base_names_dif, images_dif
 	
 # get paired batches with names only:
-	def get_paired_batches_names(self, attribute, lesson, batch_size = 132, train = False):
-		if train:
+	def get_paired_batches_names(self, attribute, lesson, batch_size = 132, split = 'train'):
+		if split == 'train':
 			name_set = self.name_set_filtered
+		if split == 'test':
+			name_set = self.name_set_test
 		else:
 			name_set = self.name_set
 

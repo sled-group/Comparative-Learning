@@ -33,25 +33,25 @@ def get_key_from_value(dictionary, target_value):
 # Build the dataset object
 def get_datasets(in_path,out_path):
     parameters_list = [
-        ['train', bn_train, ['rgba'], dic_train_logical, True, 'train_new_objects_200']
+        ['train', bn_train, ['rgba'], dic_train_logical, 'train_new_objects_200'],
+        ['test', bn_train, ['rgba'], dic_train_logical, 'test_new_objects_200']
     ]
-    # ['train', bn_train, ['rgba'], dic_train_logical, False, 'train_var'],
 
     vocab = vocabs
 
     for parameters in parameters_list:
-        source, in_base, types, dic, train, dataset_name = parameters
+        split, in_base, types, dic, dataset_name = parameters
 
         new_out_path = os.path.join(out_path, dataset_name+'_dataset.json')
         save_list(new_out_path, []) ## After doing this one time, comment this line
-        dt = MyDataset(in_path, source, in_base, types, dic, vocab)
+        dt = MyDataset(in_path, 'train', in_base, types, dic, vocab)
         new_batches = []
 
         for lesson in tqdm(all_vocabs):
             attribute = get_key_from_value(dic_train_logical, lesson)
             
             for i in range(200):               
-                base_names_sim, base_names_dif = dt.get_paired_batches_names(attribute, lesson, 132, train)
+                base_names_sim, base_names_dif = dt.get_paired_batches_names(attribute, lesson, 132, split)
                 new_batches.append(
                     {
                     'attribute' : attribute,

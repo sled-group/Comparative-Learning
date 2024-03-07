@@ -1,3 +1,4 @@
+#%%
 from random	import shuffle 
 from statistics import stdev
 from config import *
@@ -55,6 +56,8 @@ def select_objects(objects, combs):
 				if sum(count) > sum(updated_count):
 					object_to_keep.append(o)
 					updated_count = count.copy()
+				if len(object_to_keep) > 280:
+					break
 		for o in objects:
 			if o not in object_to_keep:
 				object_to_discard.append(o)
@@ -74,41 +77,119 @@ def select_objects(objects, combs):
 		
 	return final_keep, final_discard
 
-#objects, combs = generate_objects()
-#object_to_keep, object_to_discard = select_objects(objects, combs)
+objects, combs = generate_objects()
+object_to_keep, object_to_discard = select_objects(objects, combs)
 
+print(len(object_to_keep))
+print(len(object_to_discard))
+#%%
+pprint(object_to_discard)
+#%%
+# OLD
 # N: 32, std 4.83251298454236, it 10000 minimize std of keept and discarded 
-remove_from_train = [
-    ('yellow', 'metal', 'torus'),
-    ('white', 'rubber', 'torus_knot'),
-    ('red', 'metal', 'torus'),
-    ('blue', 'rubber', 'sponge'),
-    ('aqua', 'glass', 'suzanne'),
-    ('purple', 'glass', 'spot'),
-    ('purple', 'metal', 'teapot'),
-    ('green', 'metal', 'cube'),
-    ('blue', 'rubber', 'cylinder'),
-    ('white', 'plastic', 'torus'),
-    ('red', 'rubber', 'spot'),
-    ('blue', 'glass', 'spot'),
-    ('blue', 'plastic', 'torus_knot'),
-    ('aqua', 'metal', 'torus'),
-    ('white', 'metal', 'gear'),
-    ('green', 'metal', 'gear'),
-    ('yellow', 'plastic', 'torus_knot'),
-    ('green', 'plastic', 'gear'),
-    ('red', 'plastic', 'sphere'),
-    ('purple', 'rubber', 'sphere'),
-    ('brown', 'metal', 'sponge'),
-    ('yellow', 'plastic', 'cylinder'),
-    ('red', 'glass', 'cone'),
-    ('aqua', 'glass', 'spot'),
-    ('yellow', 'rubber', 'torus'),
-    ('brown', 'glass', 'suzanne'),
-    ('green', 'rubber', 'cylinder'),
-    ('red', 'rubber', 'sphere'),
-    ('purple', 'plastic', 'cylinder'),
-    ('yellow', 'glass', 'sphere'),
-    ('blue', 'glass', 'cone'),
-    ('purple', 'plastic', 'cube')]
+#remove_from_train = [
+#    ('yellow', 'metal', 'torus'),
+#    ('white', 'rubber', 'torus_knot'),
+#    ('red', 'metal', 'torus'),
+#    ('blue', 'rubber', 'sponge'),
+#    ('aqua', 'glass', 'suzanne'),
+#    ('purple', 'glass', 'spot'),
+#    ('purple', 'metal', 'teapot'),
+#    ('green', 'metal', 'cube'),
+#    ('blue', 'rubber', 'cylinder'),
+#    ('white', 'plastic', 'torus'),
+#    ('red', 'rubber', 'spot'),
+#    ('blue', 'glass', 'spot'),
+#    ('blue', 'plastic', 'torus_knot'),
+#    ('aqua', 'metal', 'torus'),
+#    ('white', 'metal', 'gear'),
+#    ('green', 'metal', 'gear'),
+#    ('yellow', 'plastic', 'torus_knot'),
+#    ('green', 'plastic', 'gear'),
+#    ('red', 'plastic', 'sphere'),
+#    ('purple', 'rubber', 'sphere'),
+#    ('brown', 'metal', 'sponge'),
+#    ('yellow', 'plastic', 'cylinder'),
+#    ('red', 'glass', 'cone'),
+#    ('aqua', 'glass', 'spot'),
+#    ('yellow', 'rubber', 'torus'),
+#    ('brown', 'glass', 'suzanne'),
+#    ('green', 'rubber', 'cylinder'),
+#    ('red', 'rubber', 'sphere'),
+#    ('purple', 'plastic', 'cylinder'),
+#    ('yellow', 'glass', 'sphere'),
+#    ('blue', 'glass', 'cone'),
+#    ('purple', 'plastic', 'cube')]
 
+# N: 71 std: 6.299084526452528
+remove_from_train = [('purple', 'glass', 'cylinder'),
+ ('green', 'plastic', 'torus_knot'),
+ ('purple', 'rubber', 'suzanne'),
+ ('blue', 'glass', 'sponge'),
+ ('white', 'glass', 'sponge'),
+ ('red', 'metal', 'suzanne'),
+ ('blue', 'glass', 'cylinder'),
+ ('aqua', 'metal', 'cone'),
+ ('purple', 'rubber', 'sphere'),
+ ('red', 'rubber', 'sphere'),
+ ('aqua', 'metal', 'torus_knot'),
+ ('green', 'metal', 'sponge'),
+ ('yellow', 'glass', 'teapot'),
+ ('white', 'metal', 'gear'),
+ ('brown', 'metal', 'sphere'),
+ ('green', 'metal', 'teapot'),
+ ('white', 'glass', 'teapot'),
+ ('green', 'plastic', 'sponge'),
+ ('brown', 'plastic', 'spot'),
+ ('green', 'rubber', 'cube'),
+ ('aqua', 'glass', 'suzanne'),
+ ('blue', 'plastic', 'torus'),
+ ('blue', 'rubber', 'cube'),
+ ('red', 'glass', 'torus_knot'),
+ ('green', 'glass', 'torus'),
+ ('white', 'plastic', 'torus_knot'),
+ ('purple', 'plastic', 'spot'),
+ ('yellow', 'glass', 'spot'),
+ ('aqua', 'rubber', 'cylinder'),
+ ('red', 'rubber', 'spot'),
+ ('brown', 'metal', 'cone'),
+ ('aqua', 'rubber', 'cone'),
+ ('white', 'plastic', 'cone'),
+ ('white', 'metal', 'torus_knot'),
+ ('brown', 'rubber', 'torus'),
+ ('blue', 'glass', 'torus'),
+ ('green', 'rubber', 'cylinder'),
+ ('green', 'plastic', 'cylinder'),
+ ('yellow', 'plastic', 'teapot'),
+ ('brown', 'plastic', 'torus_knot'),
+ ('purple', 'rubber', 'cylinder'),
+ ('yellow', 'rubber', 'gear'),
+ ('aqua', 'glass', 'gear'),
+ ('red', 'metal', 'cone'),
+ ('purple', 'metal', 'suzanne'),
+ ('brown', 'rubber', 'cube'),
+ ('green', 'rubber', 'sponge'),
+ ('brown', 'plastic', 'cube'),
+ ('red', 'glass', 'sponge'),
+ ('purple', 'glass', 'gear'),
+ ('yellow', 'plastic', 'cube'),
+ ('brown', 'plastic', 'gear'),
+ ('blue', 'metal', 'teapot'),
+ ('aqua', 'plastic', 'torus'),
+ ('purple', 'metal', 'spot'),
+ ('red', 'plastic', 'gear'),
+ ('purple', 'glass', 'cube'),
+ ('red', 'metal', 'torus'),
+ ('aqua', 'rubber', 'teapot'),
+ ('green', 'metal', 'suzanne'),
+ ('yellow', 'glass', 'cone'),
+ ('brown', 'glass', 'cone'),
+ ('red', 'plastic', 'cylinder'),
+ ('purple', 'rubber', 'cone'),
+ ('blue', 'metal', 'torus'),
+ ('brown', 'metal', 'torus_knot'),
+ ('aqua', 'plastic', 'gear'),
+ ('white', 'metal', 'suzanne'),
+ ('blue', 'glass', 'spot'),
+ ('blue', 'rubber', 'teapot'),
+ ('white', 'plastic', 'cube')]
