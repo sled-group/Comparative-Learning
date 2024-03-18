@@ -81,3 +81,7 @@ def get_sim_not_loss(centroid, z):
 		loss += F.mse_loss(centroid, z[i])
 
 	return loss/z.shape[0]
+
+def get_cos_sim(a,b):
+	return torch.nn.functional.cosine_similarity(a, b, dim=1)
+
