@@ -34,7 +34,7 @@ def get_key_from_value(dictionary, target_value):
 def get_datasets(in_path,out_path):
 
     vocab = vocabs
-    new_out_path = os.path.join(out_path, 'train_new_objects_200'+'_dataset.json')
+    new_out_path = os.path.join(out_path, 'train_novel_objects_200'+'_dataset.json')
     save_list(new_out_path, []) ## After doing this one time, comment this line
     dt = MyDataset(in_path, 'train', 'no_train', ['rgba'], dic_train_logical, vocab)
     new_batches = []
